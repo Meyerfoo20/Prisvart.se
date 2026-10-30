@@ -1,0 +1,1575 @@
+<!doctype html><html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body>
+<title>Prisvärt Helsingborg</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: butikshylla. Sticky header, hero med text + karta, filtrerbar varuhylla, steg, butiksformulär, mörk footer. */
+:root {
+  --bg-main: #f8f6f0;
+  --bg-alt: #eee8dc;
+  --bg-card: #ffffff;
+  --bg-glass: rgba(248, 246, 240, 0.82);
+  --text-main: #181c19;
+  --text-muted: #56615a;
+  --border-color: #ded8cb;
+  --shadow-elevated: 0 12px 32px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(0, 0, 0, 0.02);
+  --btn-text: #ffffff;
+  --bg-footer: #092419;
+  --accent-main: #0f402d;
+  --accent-hover: #195e43;
+  --accent-light: #dcf2e9;
+  --accent-pop: #facc15;
+
+  --sticker-text: #1b1a0c;
+  --urgent: #a8321c;
+  --urgent-bg: #fbe7e1;
+  --footer-text: #cfe3d8;
+  --footer-muted: #86a596;
+  --water: #d7e6e4;
+  --water-line: #b9d0cd;
+  --land: #f1ede3;
+  --road: #ddd5c4;
+  --tint-mejeri: #e4edf5;
+  --tint-kott: #f6e6e1;
+  --tint-brod: #f4eadb;
+  --tint-frukt: #e3efdc;
+  --tint-fardig: #f4eed7;
+
+  --font-display: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --r-sm: 6px;
+  --r-md: 12px;
+  --wrap: 1180px;
+}
+:root { color-scheme: light; }
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 60; background: var(--bg-main);
+}
+.wrap {
+  max-width: var(--wrap); margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (min-width: 720px) {
+  .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); }
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.02em; }
+p { margin: 0; }
+a { color: inherit; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent-main); outline-offset: 2px; border-radius: 4px; }
+.mono { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.eyebrow {
+  font-family: var(--font-data); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Header */
+.site-header {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+  background: var(--bg-glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+}
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 19px; letter-spacing: -0.02em; }
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 7px; background: var(--accent-main);
+  display: grid; place-items: center; position: relative; flex: none;
+}
+.brand-mark::after {
+  content: ""; position: absolute; right: -4px; top: -4px; width: 12px; height: 12px;
+  border-radius: 50%; background: var(--accent-pop); border: 2px solid var(--bg-main);
+}
+.brand-mark svg { width: 16px; height: 16px; }
+.brand small { font-weight: 500; color: var(--text-muted); font-size: 14px; }
+.nav { display: flex; align-items: center; gap: 28px; }
+.nav a { text-decoration: none; font-size: 15px; color: var(--text-muted); font-weight: 500; }
+.nav a:hover { color: var(--text-main); }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 11px 18px; border-radius: var(--r-sm); border: 1px solid transparent;
+  background: var(--accent-main); color: var(--btn-text); font-weight: 600; font-size: 15px;
+  cursor: pointer; text-decoration: none; transition: background .15s ease, transform .15s ease;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--accent-hover); }
+.btn:active { transform: translateY(1px); }
+.btn.ghost { background: transparent; color: var(--text-main); border-color: var(--border-color); }
+.btn.ghost:hover { background: var(--bg-alt); }
+.btn.sm { padding: 8px 14px; font-size: 14px; }
+@media (max-width: 760px) { .nav a { display: none; } .nav { gap: 0; } }
+
+/* Prototype banner */
+.proto {
+  background: var(--accent-light); color: var(--accent-main); font-size: 13px;
+}
+.proto .wrap { padding-block: 8px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.proto strong { font-family: var(--font-data); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+
+/* Hero */
+.hero .wrap {
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px;
+  padding-block: 64px 56px; align-items: center;
+}
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 36px; padding-block: 40px; } }
+.hero h1 { font-size: clamp(38px, 5.6vw, 64px); line-height: 1.02; font-weight: 700; letter-spacing: -0.035em; }
+.hero h1 .tag {
+  display: inline-block; background: var(--accent-pop); color: var(--sticker-text);
+  padding: 0 .18em; border-radius: 4px; transform: rotate(-1.5deg);
+}
+.hero-lead { margin-top: 20px; font-size: 19px; color: var(--text-muted); max-width: 34em; }
+.search {
+  margin-top: 32px; display: flex; gap: 8px; background: var(--bg-card);
+  border: 1px solid var(--border-color); border-radius: var(--r-md); padding: 6px;
+  box-shadow: var(--shadow-elevated); max-width: 520px;
+}
+.search label { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding-left: 12px; }
+.search svg { flex: none; color: var(--text-muted); }
+.search input { border: 0; background: transparent; width: 100%; min-width: 0; padding: 10px 0; outline: none; font-size: 16px; }
+.search input::placeholder { color: var(--text-muted); }
+.hero-facts { margin-top: 28px; display: flex; gap: 28px; flex-wrap: wrap; color: var(--text-muted); font-size: 14px; }
+.hero-facts b { color: var(--text-main); font-family: var(--font-data); font-weight: 600; }
+
+/* Map */
+.map-card {
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--r-md);
+  box-shadow: var(--shadow-elevated); overflow: hidden;
+}
+.map-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--border-color); gap: 12px; }
+.map-head h2 { font-size: 15px; font-weight: 600; letter-spacing: 0; }
+.map-head button { border: 0; background: none; color: var(--accent-main); font-weight: 600; font-size: 14px; cursor: pointer; padding: 4px; }
+.map-head button[hidden] { display: none !important; }
+.map-wrap { background: var(--water); }
+.map-svg { display: block; width: 100%; height: auto; max-width: 100%; max-height: 520px; margin: 0 auto; cursor: crosshair; touch-action: manipulation; }
+.map-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.map-tools .btn { padding: 6px 12px; font-size: 13px; }
+.dist { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-data); font-size: 13px; font-weight: 600; color: var(--accent-main); background: var(--accent-light); padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+.dist svg { flex: none; }
+.maplink { border: 0; background: none; padding: 0; color: var(--text-muted); font-size: 13px; text-decoration: underline; cursor: pointer; }
+.maplink:hover { color: var(--text-main); }
+.map-attrib { font-size: 11px; color: var(--text-muted); }
+.map-svg .water { fill: var(--water); }
+.map-svg .coast { fill: none; stroke: var(--water-line); stroke-width: 2; }
+.map-svg .land { fill: var(--land); }
+.map-svg .road { fill: none; stroke: var(--road); stroke-width: 5; stroke-linecap: round; }
+.map-svg .road.minor { stroke-width: 2.5; }
+.map-svg .area { font-family: var(--font-data); font-size: 9.5px; letter-spacing: .1em; fill: var(--text-muted); text-transform: uppercase; }
+.map-svg .sea { font-family: var(--font-data); font-size: 11px; letter-spacing: .3em; fill: var(--text-muted); opacity: .7; }
+.pin { cursor: pointer; }
+.pin .ring { fill: var(--accent-main); opacity: 0; transition: opacity .2s; }
+.pin .dot { fill: var(--accent-main); stroke: var(--bg-card); stroke-width: 2; }
+.pin.empty .dot { fill: var(--bg-card); stroke: var(--accent-main); stroke-width: 1.6; }
+.pin .count { font-family: var(--font-data); font-size: 10px; font-weight: 600; fill: var(--btn-text); text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+.pin:hover .ring, .pin:focus .ring { opacity: .3; }
+.pin.active .dot { fill: var(--accent-pop); }
+.pin.active .ring { fill: var(--accent-pop); opacity: .45; }
+.pin.active .dot { stroke: var(--text-main); }
+.pin:focus { outline: none; }
+.pin:focus-visible .dot { stroke: var(--text-main); }
+.you .dot { fill: var(--text-main); stroke: var(--bg-card); stroke-width: 3; }
+.you .halo { fill: var(--text-main); opacity: .12; }
+.you text { font-family: var(--font-data); font-size: 9.5px; fill: var(--text-main); font-weight: 600; }
+.map-foot { padding: 12px 16px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); min-height: 46px; }
+.map-foot b { color: var(--text-main); }
+.map-head h2 { white-space: nowrap; }
+#gpsBtn { padding: 6px 12px; font-size: 13px; }
+#gpsBtn.busy svg { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.locpick { border-top: 1px solid var(--border-color); padding: 14px 16px 16px; display: grid; gap: 10px; background: var(--bg-card); }
+.locsugg { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-height: 260px; overflow-y: auto; }
+.locsugg button { width: 100%; text-align: left; border: 0; background: none; padding: 10px 10px; border-radius: var(--r-sm); cursor: pointer; display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+.locsugg button:hover, .locsugg button:focus-visible { background: var(--bg-alt); outline: none; }
+.locsugg small { color: var(--text-muted); font-size: 12px; white-space: nowrap; }
+.lochint { font-size: 13px; color: var(--text-muted); }
+.you .acc { fill: var(--text-main); opacity: .07; stroke: var(--text-main); stroke-opacity: .25; stroke-width: 1; }
+.you .arrow { fill: var(--text-main); }
+.you text { paint-order: stroke; stroke: var(--land); stroke-width: 3.5px; stroke-linejoin: round; font-size: 11px; }
+
+/* Section */
+.section { padding-block: 72px; }
+.section.alt { background: var(--bg-alt); }
+.section-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 28px; }
+.section-head h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 700; line-height: 1.08; }
+.section-head p { color: var(--text-muted); margin-top: 8px; max-width: 46em; }
+
+/* Filters */
+.toolbar { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 24px; }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-main);
+  padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 500; cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.chip:hover { border-color: var(--text-muted); }
+.chip[aria-pressed="true"] { background: var(--accent-main); color: var(--btn-text); border-color: var(--accent-main); }
+.chip .n { font-family: var(--font-data); font-size: 12px; opacity: .7; margin-left: 4px; }
+.sort { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-muted); }
+.sort select {
+  border: 1px solid var(--border-color); background: var(--bg-card); padding: 8px 12px; border-radius: var(--r-sm);
+  font-size: 14px; color: var(--text-main);
+}
+.active-store {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 20px; font-size: 14px;
+  background: var(--accent-light); color: var(--accent-main); padding: 10px 14px; border-radius: var(--r-sm);
+}
+.active-store button { margin-left: auto; border: 0; background: none; color: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+/* Product grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 16px; }
+.item {
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--r-md);
+  padding: 18px; display: flex; flex-direction: column; gap: 14px; position: relative; min-width: 0;
+  transition: box-shadow .2s, transform .2s;
+}
+.item:hover { box-shadow: var(--shadow-elevated); }
+.item { --pad: 18px; }
+.pic { margin: calc(-1 * var(--pad)) calc(-1 * var(--pad)) 0; height: 148px; border-radius: var(--r-md) var(--r-md) 0 0; position: relative; display: grid; place-items: center; overflow: hidden; }
+.pic svg { width: 76%; max-width: 230px; height: 100%; display: block; }
+.pic img { width: 100%; height: 100%; object-fit: contain; padding: 12px; box-sizing: border-box; mix-blend-mode: multiply; }
+.pic .art-fb { display: contents; }
+.pic .sticker { position: absolute; top: 12px; right: 12px; }
+.thumb { width: 44px; height: 44px; border-radius: 8px; display: grid; place-items: center; overflow: hidden; flex: none; }
+.thumb svg { width: 100%; height: 100%; }
+.thumb img { width: 100%; height: 100%; object-fit: contain; padding: 3px; box-sizing: border-box; mix-blend-mode: multiply; }
+.thumb .art-fb { display: contents; }
+.item-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.store-line { font-size: 13px; color: var(--text-muted); line-height: 1.35; min-width: 0; }
+.store-line b { display: block; color: var(--text-main); font-weight: 600; font-size: 14px; }
+.sticker {
+  flex: none; background: var(--accent-pop); color: var(--sticker-text); font-family: var(--font-data);
+  font-weight: 600; font-size: 15px; padding: 6px 9px; border-radius: 4px; transform: rotate(3deg);
+  box-shadow: 0 2px 0 rgba(0,0,0,.08);
+}
+.item h3 { font-size: 20px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+.item .meta { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+.expiry {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600;
+  padding: 4px 10px; border-radius: 999px; background: var(--bg-alt); color: var(--text-main); width: fit-content;
+}
+.expiry::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent-main); }
+.expiry.soon { background: var(--urgent-bg); color: var(--urgent); }
+.expiry.soon::before { background: var(--urgent); }
+.price-row { display: flex; align-items: end; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px dashed var(--border-color); margin-top: auto; flex-wrap: wrap; }
+.price { font-family: var(--font-data); font-variant-numeric: tabular-nums; }
+.price .now { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; display: block; }
+.price .now small { font-size: 14px; font-weight: 500; }
+.price .was { font-size: 13px; color: var(--text-muted); }
+.price .was s { margin-right: 6px; }
+.item .btn[disabled] { background: var(--bg-alt); color: var(--text-muted); cursor: default; }
+.left { font-size: 12px; color: var(--text-muted); font-family: var(--font-data); }
+.empty { padding: 48px 20px; text-align: center; color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: var(--r-md); }
+.empty b { display: block; color: var(--text-main); font-size: 18px; margin-bottom: 6px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; overflow-x: auto; }
+.tab {
+  border: 0; background: none; padding: 12px 16px; font-size: 16px; font-weight: 600; color: var(--text-muted);
+  cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.tab:hover { color: var(--text-main); }
+.tab[aria-selected="true"] { color: var(--text-main); border-bottom-color: var(--accent-main); }
+.tab .n { font-family: var(--font-data); font-size: 12px; background: var(--bg-card); border: 1px solid var(--border-color); padding: 1px 8px; border-radius: 999px; color: var(--text-main); }
+.tab[aria-selected="true"] .n { background: var(--accent-main); border-color: var(--accent-main); color: var(--btn-text); }
+.tab .n.bump { animation: bump .35s ease; }
+@keyframes bump { 50% { transform: scale(1.25); } }
+
+.tags { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button.dist { border: 0; cursor: pointer; font: inherit; font-family: var(--font-data); font-size: 13px; font-weight: 600; }
+button.dist:hover { background: var(--accent-main); color: var(--btn-text); }
+.addbtn.added { color: var(--accent-main); border-color: var(--accent-main); background: var(--accent-light); }
+.addbtn.added:hover { background: var(--accent-light); }
+section[id], #karta { scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 76px); }
+
+/* Bottom bar (mobile) */
+.bottombar { display: none; }
+@media (max-width: 760px) {
+  body { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+  .bottombar {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); position: fixed; left: 0; right: 0; bottom: 0; z-index: 70;
+    background: var(--bg-glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border-color);
+    padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px));
+  }
+  .bottombar button {
+    border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 0; margin: 0;
+    font: inherit; font-size: 11px; font-weight: 600; color: var(--text-muted); cursor: pointer; min-width: 0;
+    -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none;
+  }
+  .bottombar .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; line-height: 1.3; }
+  .bottombar .ico {
+    position: relative; display: grid; place-items: center; width: 56px; height: 30px; border-radius: 999px;
+    transition: background .18s ease, transform .12s ease;
+  }
+  .bottombar .ico svg { display: block; }
+  .bottombar button:active .ico { transform: scale(.92); }
+  .bottombar button[aria-current="true"] { color: var(--accent-main); }
+  .bottombar button[aria-current="true"] .ico { background: var(--accent-light); }
+  .bottombar button:focus-visible { outline: none; }
+  .bottombar button:focus-visible .ico { outline: 2px solid var(--accent-main); outline-offset: 1px; }
+  .bb-badge {
+    position: absolute; top: -3px; right: 6px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px;
+    background: var(--accent-pop); color: var(--sticker-text); font-family: var(--font-data); font-size: 11px; line-height: 14px; text-align: center;
+    border: 2px solid var(--bg-main); box-sizing: border-box;
+  }
+  .bottombar { transition: transform .2s ease; }
+  .bottombar.away { transform: translateY(110%); }
+  .toast { bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
+
+  /* Header */
+  .site-header .wrap { padding-block: 10px; }
+  .listbtn { display: none; }
+  .brand { font-size: 18px; }
+
+  /* Rhythm */
+  .proto .wrap { padding-block: 6px; font-size: 12px; }
+  .hero .wrap { padding-block: 28px 32px; gap: 28px; }
+  .hero-lead { font-size: 17px; margin-top: 14px; }
+  .search { margin-top: 22px; }
+  .hero-facts { margin-top: 18px; gap: 6px 18px; font-size: 13px; }
+  .section { padding-block: 40px; }
+  .section-head { margin-bottom: 18px; }
+  .section-head p { font-size: 15px; }
+
+  /* Tabs + filters */
+  .tabs { margin-bottom: 14px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--hdr, 51px)); z-index: 20; background: var(--bg-alt); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); }
+  .tab { flex: 1; justify-content: center; padding: 12px 8px; font-size: 15px; }
+  .toolbar { gap: 10px; margin-bottom: 16px; }
+  .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding-inline: max(16px, env(safe-area-inset-left, 0px)); padding-block: 2px; width: calc(100% + 2 * max(16px, env(safe-area-inset-left, 0px))); scroll-padding-inline: 16px; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip { flex: none; padding: 8px 13px; }
+  .sort { width: 100%; justify-content: space-between; }
+  .sort select { flex: 1; max-width: 220px; }
+
+  /* Cards */
+  .grid { gap: 12px; }
+  .item { padding: 14px 14px 12px; gap: 10px; --pad: 14px; }
+  .pic { height: 116px; margin-bottom: 2px; }
+  .pic .sticker { top: 10px; right: 10px; }
+  .item h3 { font-size: 17px; }
+  .item .meta { font-size: 12px; margin-top: 2px; }
+  .store-line { font-size: 12px; }
+  .store-line b { font-size: 13px; }
+  .sticker { font-size: 14px; padding: 5px 8px; }
+  .price-row { padding-top: 10px; align-items: center; flex-wrap: nowrap; }
+  .price .now { font-size: 22px; }
+  .addbtn { padding: 10px 14px; }
+
+  /* Map + list */
+  .map-svg { max-height: 420px; }
+  .map-head { padding: 10px 12px; }
+  .route { padding: 16px; gap: 14px; }
+  .route h3 { font-size: 19px; }
+  .lgroup-head { padding: 12px 14px; }
+  .lgroup-head a { width: 100%; padding-left: 42px; }
+  .lrow { padding: 12px 14px; gap: 10px; grid-template-columns: 40px minmax(0, 1fr) auto auto; }
+  .thumb { width: 40px; height: 40px; }
+  .steps { gap: 22px; }
+  .form { padding: 18px; }
+  .footer .wrap { padding-block: 36px 28px; }
+}
+
+.listbtn { position: relative; }
+.listbtn .badge { font-family: var(--font-data); font-size: 12px; background: var(--accent-pop); color: var(--sticker-text); border-radius: 999px; padding: 0 7px; line-height: 18px; }
+
+/* Shopping list */
+.list-layout { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); grid-template-areas: "groups route"; gap: 24px; align-items: start; }
+.list-layout .route { grid-area: route; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 80px); }
+.list-layout .groups { grid-area: groups; display: grid; gap: 16px; min-width: 0; }
+@media (max-width: 900px) { .list-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "route" "groups"; } .list-layout .route { position: static; } }
+.route { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--r-md); box-shadow: var(--shadow-elevated); padding: 20px; display: grid; gap: 16px; min-width: 0; }
+.route h3 { font-size: 22px; font-weight: 700; line-height: 1.15; }
+.route-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.route-sum div { background: var(--bg-main); border-radius: var(--r-sm); padding: 10px; min-width: 0; }
+.route-sum span { display: block; font-size: 12px; color: var(--text-muted); }
+.route-sum b { font-family: var(--font-data); font-size: 16px; font-variant-numeric: tabular-nums; }
+.route-sum .save b { color: var(--accent-main); }
+.modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--border-color); border-radius: var(--r-sm); overflow: hidden; }
+.modes input { position: absolute; opacity: 0; pointer-events: none; }
+.modes label { text-align: center; padding: 9px 4px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text-muted); border-left: 1px solid var(--border-color); }
+.modes label:first-of-type { border-left: 0; }
+.modes input:checked + label { background: var(--accent-main); color: var(--btn-text); }
+.modes input:focus-visible + label { outline: 2px solid var(--accent-main); outline-offset: -3px; }
+.stops { list-style: none; margin: 0; padding: 0; display: grid; }
+.stops li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 8px 0; position: relative; }
+.stops li + li::before { content: ""; position: absolute; left: 12px; top: -10px; height: 20px; border-left: 2px dotted var(--border-color); }
+.stops .no { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-data); font-size: 12px; font-weight: 600; background: var(--accent-main); color: var(--btn-text); position: relative; z-index: 1; }
+.stops .no.start { background: var(--text-main); color: var(--bg-main); }
+.stops .nm { font-size: 14px; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.stops .nm small { display: block; font-weight: 400; color: var(--text-muted); font-size: 12px; }
+.stops .leg { font-family: var(--font-data); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.route .btn.wide { width: 100%; }
+.route-note { font-size: 12px; color: var(--text-muted); }
+
+.lgroup { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--r-md); overflow: hidden; min-width: 0; }
+.lgroup-head { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border-color); background: var(--bg-main); flex-wrap: wrap; }
+.lgroup-head .no { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-data); font-weight: 600; font-size: 13px; background: var(--accent-main); color: var(--btn-text); flex: none; }
+.lgroup-head .who { min-width: 0; flex: 1; }
+.lgroup-head h3 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+.lgroup-head p { font-size: 13px; color: var(--text-muted); }
+.lgroup-head a { font-size: 13px; font-weight: 600; color: var(--accent-main); }
+.lrows { list-style: none; margin: 0; padding: 0; }
+.lrow { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border-color); }
+.lrow:last-child { border-bottom: 0; }
+.lrow .nm { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.lrow .nm small { display: block; font-weight: 400; font-size: 12px; color: var(--text-muted); }
+.lrow .nm small.soon { color: var(--urgent); }
+.lrow .pr { font-family: var(--font-data); text-align: right; font-variant-numeric: tabular-nums; }
+.lrow .pr s { display: block; font-size: 12px; color: var(--text-muted); }
+.lrow .pr b { font-weight: 600; }
+.remove { border: 1px solid var(--border-color); background: var(--bg-card); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; color: var(--text-muted); }
+.remove:hover { color: var(--urgent); border-color: var(--urgent); }
+.lgroup-foot { display: flex; justify-content: space-between; padding: 10px 16px; font-size: 13px; color: var(--text-muted); background: var(--bg-main); border-top: 1px solid var(--border-color); }
+.lgroup-foot b { font-family: var(--font-data); color: var(--text-main); }
+.list-tools { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 14px; color: var(--text-muted); }
+.list-empty { padding: 56px 20px; text-align: center; border: 1px dashed var(--border-color); border-radius: var(--r-md); background: var(--bg-card); display: grid; gap: 10px; justify-items: center; }
+.list-empty b { font-size: 20px; color: var(--text-main); }
+.list-empty p { color: var(--text-muted); max-width: 30em; }
+.textbtn { border: 0; background: none; color: var(--text-muted); text-decoration: underline; cursor: pointer; font-size: 14px; padding: 4px; }
+.textbtn:hover { color: var(--urgent); }
+
+/* Steps */
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; counter-reset: s; }
+@media (max-width: 820px) { .steps { grid-template-columns: minmax(0, 1fr); gap: 28px; } }
+.step { border-top: 2px solid var(--text-main); padding-top: 18px; }
+.step .num { font-family: var(--font-data); font-size: 13px; color: var(--text-muted); }
+.step h3 { font-size: 22px; font-weight: 600; margin-top: 10px; }
+.step p { color: var(--text-muted); margin-top: 8px; max-width: 32em; }
+
+/* Store form */
+.store-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 48px; align-items: start; }
+@media (max-width: 900px) { .store-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
+.store-copy h2 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 700; line-height: 1.08; }
+.store-copy > p { color: var(--text-muted); margin-top: 12px; max-width: 36em; }
+.benefits { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 14px; }
+.benefits li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; }
+.benefits svg { color: var(--accent-main); margin-top: 3px; }
+.benefits b { display: block; }
+.benefits span { color: var(--text-muted); font-size: 15px; }
+.form {
+  background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--r-md);
+  box-shadow: var(--shadow-elevated); padding: 24px; display: grid; gap: 16px; min-width: 0;
+}
+.form-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.form-title h3 { font-size: 18px; font-weight: 600; letter-spacing: 0; }
+.field { display: grid; gap: 6px; min-width: 0; }
+.field label { font-size: 13px; font-weight: 600; }
+.field input, .field select {
+  width: 100%; border: 1px solid var(--border-color); background: var(--bg-main);
+  padding: 10px 12px; border-radius: var(--r-sm); font-size: 15px; min-width: 0;
+}
+.field input:focus, .field select:focus { outline: 2px solid var(--accent-main); outline-offset: -1px; }
+.row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.scan {
+  display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px dashed var(--border-color);
+  border-radius: var(--r-sm); background: var(--bg-main); font-size: 14px; color: var(--text-muted);
+}
+.scan .bars { font-family: var(--font-data); color: var(--text-main); font-size: 13px; }
+.scan button { margin-left: auto; }
+.scanbox { display: grid; gap: 12px; padding: 14px; border: 1px dashed var(--border-color); border-radius: var(--r-sm); background: var(--bg-main); }
+.ean-row { display: flex; gap: 8px; }
+.ean-row input { font-family: var(--font-data); letter-spacing: .04em; }
+.scan-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.scan-actions .btn { flex: 1 1 auto; }
+#reader { border-radius: var(--r-sm); overflow: hidden; background: #000000; }
+#reader video { width: 100% !important; display: block; }
+.scan-status { font-size: 13px; color: var(--text-muted); }
+.scan-status.ok { color: var(--accent-main); font-weight: 600; }
+.scan-status.err { color: var(--urgent); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.range-out { font-family: var(--font-data); font-weight: 600; }
+input[type="range"] { accent-color: var(--accent-main); padding: 0; border: 0; background: none; }
+.preview-label { font-size: 12px; }
+.calc { font-size: 14px; color: var(--text-muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.calc b { color: var(--text-main); font-family: var(--font-data); }
+.form-note { font-size: 12px; color: var(--text-muted); }
+
+/* Footer */
+.footer { background: var(--bg-footer); color: var(--footer-text); }
+.footer .wrap { padding-block: 48px 36px; display: grid; gap: 32px; grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr)); }
+@media (max-width: 760px) { .footer .wrap { grid-template-columns: minmax(0, 1fr); } }
+.footer .brand { color: #ffffff; }
+.footer .brand small { color: var(--footer-muted); }
+.footer .brand-mark { background: #1d6b4c; }
+.footer .brand-mark::after { border-color: var(--bg-footer); }
+.footer p, .footer li { color: var(--footer-muted); font-size: 14px; }
+.footer h4 { margin: 0 0 12px; font-family: var(--font-data); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--footer-text); font-weight: 500; }
+.footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.footer a { text-decoration: none; }
+.footer a:hover { color: #ffffff; }
+.footer-bottom { grid-column: 1 / -1; border-top: 1px solid rgba(255,255,255,.1); padding-top: 20px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--footer-muted); }
+
+/* Toast */
+.toast {
+  position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); z-index: 80;
+  transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+  background: var(--text-main); color: var(--bg-main); padding: 12px 18px; border-radius: var(--r-sm);
+  font-size: 14px; font-weight: 500; transition: opacity .2s, transform .2s; max-width: calc(100% - 32px);
+  box-shadow: var(--shadow-elevated);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Prisvärt, till början">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5 6 12l7.5-8" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      Prisvärt <small>Helsingborg</small>
+    </a>
+    <nav class="nav" aria-label="Huvudmeny">
+      <a href="#varor">Erbjudanden</a>
+      <a href="#sa-funkar-det">Så funkar det</a>
+      <a href="#butiker">För butiker</a>
+      <button type="button" class="btn sm listbtn" id="headerList">Inköpslista <span class="badge" id="headerCount">0</span></button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Datumvaror nära dig</p>
+      <h1 style="margin-top:14px">Bra mat som snart går ut. <span class="tag">Upp till 70&nbsp;%</span> billigare.</h1>
+      <p class="hero-lead">Se vilka butiker i Helsingborg som har nedsatta datumvaror just nu. Lägg varorna i din inköpslista och få snabbaste rutten mellan butikerna i Google Maps.</p>
+      <form class="search" id="searchForm" role="search">
+        <label for="q">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="m14 14 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="q" type="search" placeholder="Sök vara, t.ex. kyckling eller bröd" autocomplete="off">
+        </label>
+        <button class="btn" type="submit">Visa varor</button>
+      </form>
+      <div class="hero-facts">
+        <span><b id="factItems">0</b> varor just nu</span>
+        <span><b id="factStores">0</b> butiker</span>
+        <span>Närmaste butik <b id="factAvg">–</b></span>
+      </div>
+    </div>
+
+    <div class="map-card" id="karta">
+      <div class="map-head">
+        <h2>Butiker på kartan</h2>
+        <div class="map-tools">
+          <button type="button" id="mapReset" hidden>Visa alla</button>
+          <button type="button" class="btn ghost" id="locBtn">Välj plats</button>
+          <button type="button" class="btn" id="gpsBtn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 0v2M8 14v2M0 8h2M14 8h2" stroke="currentColor" stroke-width="1.5"/></svg><span id="gpsLbl">Min plats</span></button>
+        </div>
+      </div>
+      <div class="map-wrap">
+        <svg class="map-svg" id="map" viewBox="0 0 360 510" role="group" aria-label="Karta över Helsingborg med matbutiker och din plats"></svg>
+      </div>
+      <p class="map-foot" id="mapFoot"></p>
+      <div class="locpick" id="locPick" hidden>
+        <div class="field">
+          <label for="locQ">Var är du?</label>
+          <input id="locQ" type="search" autocomplete="off" placeholder="Skriv stadsdel, plats eller butik, t.ex. Söder">
+        </div>
+        <ul class="locsugg" id="locSugg" role="listbox" aria-label="Platser"></ul>
+        <p class="lochint">Eller tryck på kartan där du är.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="varor">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Hyllan just nu</p>
+        <h2 style="margin-top:10px">Datumvaror i Helsingborg</h2>
+        <p>Priserna gäller tills varan är slut eller bäst före-datumet passerat. Avståndet räknas från din plats på kartan.</p>
+      </div>
+    </div>
+
+    <div class="tabs" role="tablist" aria-label="Visa">
+      <button type="button" class="tab" role="tab" id="tabOffers" aria-controls="panelOffers" aria-selected="true">Erbjudanden <span class="n" id="offersCount">0</span></button>
+      <button type="button" class="tab" role="tab" id="tabList" aria-controls="panelList" aria-selected="false">Inköpslista <span class="n" id="listCount">0</span></button>
+    </div>
+
+    <div id="panelOffers" role="tabpanel" aria-labelledby="tabOffers">
+
+    <div class="toolbar">
+      <div class="chips" id="chips" role="group" aria-label="Filtrera på kategori"></div>
+      <label class="sort" for="sort">Sortera
+        <select id="sort">
+          <option value="discount">Störst rabatt</option>
+          <option value="expiry">Går ut först</option>
+          <option value="distance">Närmast</option>
+          <option value="price">Lägst pris</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="active-store" id="activeStore" hidden>
+      <span id="activeStoreText"></span>
+      <button type="button" id="clearStore">Visa alla butiker</button>
+    </div>
+
+    <div class="grid" id="grid" aria-live="polite"></div>
+    </div>
+
+    <div id="panelList" role="tabpanel" aria-labelledby="tabList" hidden>
+      <div class="list-empty" id="listEmpty">
+        <b>Din inköpslista är tom</b>
+        <p>Tryck på Lägg i listan på en vara. Varorna sorteras per butik, och du får en rutt mellan butikerna.</p>
+        <button type="button" class="btn" id="goOffers">Visa erbjudanden</button>
+      </div>
+      <div class="list-layout" id="listFull" hidden>
+        <aside class="route" aria-label="Rutt">
+          <div>
+            <p class="eyebrow">Din rutt</p>
+            <h3 style="margin-top:6px" id="routeTitle"></h3>
+          </div>
+          <div class="route-sum">
+            <div><span>Varor</span><b id="sumCount">0</b></div>
+            <div><span>Att betala</span><b id="sumPay">0 kr</b></div>
+            <div class="save"><span>Du sparar</span><b id="sumSave">0 kr</b></div>
+          </div>
+          <div class="modes" role="radiogroup" aria-label="Färdsätt">
+            <input type="radio" name="mode" id="mWalk" value="walking" checked><label for="mWalk">Gå</label>
+            <input type="radio" name="mode" id="mBike" value="bicycling"><label for="mBike">Cykla</label>
+            <input type="radio" name="mode" id="mCar" value="driving"><label for="mCar">Bil</label>
+          </div>
+          <ol class="stops" id="stops"></ol>
+          <a class="btn wide" id="routeLink" href="https://www.google.com/maps" target="_blank" rel="noopener">Öppna rutten i Google Maps</a>
+          <p class="route-note">Butikerna ligger i den ordning som ger kortast total sträcka från din plats. Google Maps visar exakt väg och tid. Avstånden här är fågelvägen.</p>
+        </aside>
+        <div class="groups">
+          <div class="list-tools"><span id="listMeta"></span><button type="button" class="textbtn" id="clearList">Töm listan</button></div>
+          <div id="groups" style="display:grid;gap:16px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="sa-funkar-det">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Så funkar det</p>
+        <h2 style="margin-top:10px">Från hyllan till din kasse på tre steg</h2>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="num">Steg 1</span>
+        <h3>Butiken skannar varan</h3>
+        <p>Personalen skannar streckkoden, väljer rabatt och lägger upp varan. Det tar under tio sekunder.</p>
+      </div>
+      <div class="step">
+        <span class="num">Steg 2</span>
+        <h3>Du hittar varan</h3>
+        <p>Du ser varan direkt, med pris, bäst före-datum och hur långt du har till butiken.</p>
+      </div>
+      <div class="step">
+        <span class="num">Steg 3</span>
+        <h3>Gå dit och handla</h3>
+        <p>Varan står i butikens datumhylla och du betalar som vanligt i kassan. Butiken säljer mer och slänger mindre.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="butiker">
+  <div class="wrap store-grid">
+    <div class="store-copy">
+      <p class="eyebrow">För butiker</p>
+      <h2 style="margin-top:10px">Sälj det ni annars hade slängt</h2>
+      <p>Prisvärt visar era nedsatta varor för kunder i närheten. Ni bestämmer rabatten och hur länge varan ligger ute.</p>
+      <ul class="benefits">
+        <li>
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><b>Mindre svinn</b><span>Varor som går ut i datum når fler kunder innan de måste slängas.</span></div>
+        </li>
+        <li>
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><b>Nya kunder i butiken</b><span>Den som hämtar en datumvara handlar ofta mer på samma besök.</span></div>
+        </li>
+        <li>
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><b>Inget nytt system</b><span>Funkar i mobilen. Skanna, sätt pris, klart.</span></div>
+        </li>
+      </ul>
+    </div>
+
+    <form class="form" id="storeForm" novalidate>
+      <div class="form-title">
+        <h3>Lägg upp en vara</h3>
+        <span class="eyebrow">Testa demon</span>
+      </div>
+      <div class="scanbox">
+        <div class="field">
+          <label for="fEan">Streckkod (EAN)</label>
+          <div class="ean-row">
+            <input id="fEan" inputmode="numeric" autocomplete="off" placeholder="Skanna eller skriv in, t.ex. 7310865004703">
+            <button class="btn ghost sm" type="button" id="eanLookup">Sök</button>
+          </div>
+        </div>
+        <div class="scan-actions">
+          <button class="btn sm" type="button" id="camBtn">Skanna med kameran</button>
+          <label class="btn ghost sm" for="fPhoto">Fota streckkoden</label>
+          <input id="fPhoto" type="file" accept="image/*" capture="environment" class="visually-hidden">
+        </div>
+        <div id="reader" hidden></div>
+        <button class="btn ghost sm" type="button" id="camStop" hidden>Stäng kameran</button>
+        <div id="readerFile" hidden></div>
+        <p class="scan-status" id="scanStatus" aria-live="polite">Rikta kameran mot streckkoden på förpackningen. Varans namn fylls i automatiskt.</p>
+      </div>
+      <div class="field">
+        <label for="fName">Vara</label>
+        <input id="fName" value="Färsk laxfilé 400 g" required placeholder="Fylls i när du skannar">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="fPrice">Ordinarie pris (kr)</label>
+          <input id="fPrice" type="number" min="1" step="0.5" value="89.90" inputmode="decimal" required>
+        </div>
+        <div class="field">
+          <label for="fCat">Kategori</label>
+          <select id="fCat"></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="fDays">Bäst före</label>
+          <select id="fDays">
+            <option value="0">I dag</option>
+            <option value="1" selected>I morgon</option>
+            <option value="2">Om 2 dagar</option>
+            <option value="3">Om 3 dagar</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fQty">Antal</label>
+          <input id="fQty" type="number" min="1" max="99" value="4" inputmode="numeric" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="fDisc">Rabatt <span class="range-out" id="discOut">60 %</span></label>
+        <input id="fDisc" type="range" min="20" max="80" step="5" value="60">
+      </div>
+      <div class="field">
+        <label for="fStore">Butik</label>
+        <select id="fStore"></select>
+      </div>
+      <div class="calc">
+        <span>Nytt pris <b id="newPrice">35,96 kr</b></span>
+      </div>
+      <button class="btn" type="submit">Publicera varan</button>
+      <p class="form-note">I prototypen syns varan direkt på hyllan ovan men sparas inte.</p>
+    </form>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M2.5 8.5 6 12l7.5-8" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        Prisvärt <small>Helsingborg</small>
+      </a>
+      <p style="margin-top:14px;max-width:32em">En idé från Techship på HETCH i Helsingborg. Mindre matsvinn, lägre matkostnader.</p>
+    </div>
+    <div>
+      <h4>Handla</h4>
+      <ul>
+        <li><a href="#varor">Erbjudanden</a></li>
+        <li><a href="#sa-funkar-det">Så funkar det</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Butiker</h4>
+      <ul>
+        <li><a href="#butiker">Anslut din butik</a></li>
+        <li><a href="#butiker">Lägg upp en vara</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Prisvärt</span>
+      <span>Prototyp. Varor och priser är exempel. Butiksplatser: Google.</span>
+    </div>
+  </div>
+</footer>
+
+<nav class="bottombar" aria-label="Snabbmeny">
+  <button type="button" data-go="karta" id="bbMap"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="1.8"/></svg></span><span class="lbl">Karta</span></button>
+  <button type="button" data-go="offers" id="bbOffers"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="8" r="1.6" fill="currentColor"/></svg></span><span class="lbl">Erbjudanden</span></button>
+  <button type="button" data-go="list" id="bbList"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l2.4 11h11L21 7H6.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19.5" r="1.5" fill="currentColor"/><circle cx="17" cy="19.5" r="1.5" fill="currentColor"/></svg><span class="bb-badge" id="bbCount" hidden>0</span></span><span class="lbl">Inköpslista</span></button>
+  <button type="button" data-go="butiker" id="bbStores"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10v10h16V10M3 10l1.5-6h15L21 10H3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="1.8"/></svg></span><span class="lbl">För butiker</span></button>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+(function () {
+  var stores = [
+    { id: "maxi-berga", name: "Maxi ICA Stormarknad", addr: "Regementsvägen 7", lat: 56.06586, lng: 12.72047 },
+    { id: "ica-soder", name: "ICA Söder", addr: "Carl Krooks gata 30", lat: 56.03890, lng: 12.70115 },
+    { id: "ica-hamilton", name: "ICA Nära Hamilton", addr: "Drottninggatan 136", lat: 56.05719, lng: 12.68360 },
+    { id: "maxi-raa", name: "ICA Maxi Råå", addr: "Landskronavägen 33", lat: 56.00232, lng: 12.74569 },
+    { id: "ica-mariastaden", name: "ICA Supermarket Mariastaden", addr: "Grepgatan 40", lat: 56.08101, lng: 12.70488 },
+    { id: "ica-city", name: "ICA Nära City", addr: "Drottninggatan 46", lat: 56.04905, lng: 12.69082 },
+    { id: "ica-kurir", name: "ICA Nära Kurir Livs", addr: "Kurirgatan 1", lat: 56.06559, lng: 12.70030 },
+    { id: "ica-jonkoping", name: "ICA Nära Jönköpingsgatan", addr: "Jönköpingsgatan 24 B", lat: 56.04724, lng: 12.71815 },
+    { id: "ica-borgen", name: "ICA Nära Borgen", addr: "Aschebergsgatan 3", lat: 56.05665, lng: 12.69024 },
+    { id: "coop-kopparmolle", name: "Coop Kopparmöllegatan", addr: "Kopparmöllegatan 5", lat: 56.05092, lng: 12.69920 },
+    { id: "coop-knutpunkten", name: "Coop Knutpunkten", addr: "Järnvägsgatan 11", lat: 56.04495, lng: 12.69482 },
+    { id: "coop-stenbock", name: "Coop Stenbocksgatan", addr: "Södra Stenbocksgatan 127", lat: 56.04093, lng: 12.71145 },
+    { id: "coop-orebro", name: "Coop Örebrogatan", addr: "Örebrogatan 32", lat: 56.04463, lng: 12.72123 },
+    { id: "storacoop-raa", name: "Stora Coop Råå", addr: "Landskronavägen 16", lat: 56.01056, lng: 12.73335 },
+    { id: "storacoop-vala", name: "Stora Coop Väla", addr: "Björkavägen 97, Ödåkra", lat: 56.09340, lng: 12.76501 },
+    { id: "willys-berga", name: "Willys Berga", addr: "Regementsvägen 3", lat: 56.06420, lng: 12.71755 },
+    { id: "willys-vala", name: "Willys Väla", addr: "Ekslingan 3B", lat: 56.09191, lng: 12.75013 },
+    { id: "willys-skaragatan", name: "Willys Hemma Skaragatan", addr: "Skaragatan 90", lat: 56.05007, lng: 12.72684 },
+    { id: "willys-raa", name: "Willys Råå", addr: "Landskronavägen 16", lat: 56.01105, lng: 12.73331 },
+    { id: "willys-gustavslund", name: "Willys Hemma Gustavslund", addr: "Gustavslundsvägen 2", lat: 56.03096, lng: 12.73982 },
+    { id: "lidl-soder", name: "Lidl Södergatan", addr: "Södergatan 19", lat: 56.04038, lng: 12.70227 },
+    { id: "lidl-drottninghog", name: "Lidl Drottninghög", addr: "Drottninghögsvägen 6", lat: 56.06652, lng: 12.72305 },
+    { id: "lidl-brunnback", name: "Lidl Brunnbäcksgatan", addr: "Brunnbäcksgatan 33", lat: 56.01590, lng: 12.72891 },
+    { id: "lidl-landskrona", name: "Lidl Landskronavägen", addr: "Landskronavägen 33", lat: 56.00140, lng: 12.74615 },
+    { id: "hemkop-soder", name: "Hemköp Söder", addr: "Södergatan 32", lat: 56.04033, lng: 12.70181 },
+    { id: "hemkop-stattena", name: "Hemköp Stattena", addr: "Stattena Centrum 6", lat: 56.05723, lng: 12.70121 },
+    { id: "hemkop-serpentin", name: "Hemköp Serpentinvägen", addr: "Serpentinvägen 3", lat: 56.09122, lng: 12.65469 },
+    { id: "citygross", name: "City Gross", addr: "Rusthållsgatan 43", lat: 56.01640, lng: 12.75385 }
+  ];
+  var cats = ["Mejeri", "Kött & fisk", "Bröd", "Frukt & grönt", "Färdigmat"];
+  var items = [
+    { name: "Mellanmjölk 1,5 l", cat: "Mejeri", store: "ica-city", price: 21.9, disc: 50, days: 1, qty: 6, unit: "14,60 kr/l" },
+    { name: "Kycklingfilé 900 g", cat: "Kött & fisk", store: "maxi-berga", price: 119, disc: 60, days: 0, qty: 3, unit: "132,22 kr/kg" },
+    { name: "Laxfilé 2 st, 250 g", cat: "Kött & fisk", store: "storacoop-raa", price: 79.9, disc: 50, days: 1, qty: 5, unit: "319,60 kr/kg" },
+    { name: "Surdegsbröd, råg", cat: "Bröd", store: "hemkop-soder", price: 42, disc: 70, days: 0, qty: 4, unit: "84,00 kr/kg" },
+    { name: "Grekisk yoghurt 10 %, 1 kg", cat: "Mejeri", store: "lidl-drottninghog", price: 46.5, disc: 40, days: 2, qty: 8, unit: "46,50 kr/kg" },
+    { name: "Bananer, mogna, 1 kg", cat: "Frukt & grönt", store: "willys-berga", price: 26.9, disc: 60, days: 0, qty: 10, unit: "26,90 kr/kg" },
+    { name: "Kycklingsallad med pasta", cat: "Färdigmat", store: "coop-knutpunkten", price: 59.9, disc: 50, days: 0, qty: 7, unit: "171,14 kr/kg" },
+    { name: "Nötfärs 12 %, 500 g", cat: "Kött & fisk", store: "citygross", price: 64.9, disc: 40, days: 2, qty: 6, unit: "129,80 kr/kg" },
+    { name: "Hummus naturell 200 g", cat: "Färdigmat", store: "ica-mariastaden", price: 27.5, disc: 50, days: 3, qty: 9, unit: "137,50 kr/kg" },
+    { name: "Prästost 31 %, 450 g", cat: "Mejeri", store: "maxi-raa", price: 69.9, disc: 30, days: 3, qty: 4, unit: "155,33 kr/kg" },
+    { name: "Färska lasagneplattor 250 g", cat: "Färdigmat", store: "ica-soder", price: 34.9, disc: 50, days: 1, qty: 5, unit: "139,60 kr/kg" },
+    { name: "Kanelbullar 6-pack", cat: "Bröd", store: "coop-orebro", price: 45, disc: 60, days: 1, qty: 3, unit: "150,00 kr/kg" },
+    { name: "Babyspenat 65 g", cat: "Frukt & grönt", store: "hemkop-stattena", price: 22.9, disc: 50, days: 1, qty: 12, unit: "352,31 kr/kg" },
+    { name: "Apelsinjuice 1 l", cat: "Mejeri", store: "willys-vala", price: 32.9, disc: 40, days: 2, qty: 6, unit: "32,90 kr/l" },
+    { name: "Fläskfilé ca 600 g", cat: "Kött & fisk", store: "coop-kopparmolle", price: 89, disc: 50, days: 1, qty: 2, unit: "148,33 kr/kg" },
+    { name: "Fullkornsbaguette 2-pack", cat: "Bröd", store: "lidl-soder", price: 24.9, disc: 60, days: 0, qty: 8, unit: "99,60 kr/kg" },
+    { name: "Körsbärstomater 250 g", cat: "Frukt & grönt", store: "willys-skaragatan", price: 24.9, disc: 40, days: 2, qty: 7, unit: "99,60 kr/kg" },
+    { name: "Vaniljkvarg 500 g", cat: "Mejeri", store: "ica-kurir", price: 29.9, disc: 50, days: 1, qty: 5, unit: "59,80 kr/kg" },
+    { name: "Wokgrönsaker färska 400 g", cat: "Frukt & grönt", store: "storacoop-vala", price: 34.9, disc: 50, days: 1, qty: 6, unit: "87,25 kr/kg" },
+    { name: "Smörgåstårta 4 bitar", cat: "Färdigmat", store: "ica-hamilton", price: 159, disc: 50, days: 0, qty: 2, unit: "198,75 kr/kg" },
+    { name: "Torskrygg 400 g", cat: "Kött & fisk", store: "willys-raa", price: 99.9, disc: 40, days: 1, qty: 4, unit: "249,75 kr/kg" },
+    { name: "Lättmjölk 1 l", cat: "Mejeri", store: "willys-gustavslund", price: 14.9, disc: 50, days: 1, qty: 9, unit: "14,90 kr/l" },
+    { name: "Avokado 4-pack, mogen", cat: "Frukt & grönt", store: "ica-jonkoping", price: 39.9, disc: 60, days: 0, qty: 5, unit: "–" },
+    { name: "Pizzabotten med tomatsås", cat: "Färdigmat", store: "lidl-brunnback", price: 29.9, disc: 50, days: 2, qty: 6, unit: "74,75 kr/kg" },
+    { name: "Fikonbröd 400 g", cat: "Bröd", store: "hemkop-serpentin", price: 39.9, disc: 50, days: 1, qty: 3, unit: "99,75 kr/kg" },
+    { name: "Kycklingklubbor 1 kg", cat: "Kött & fisk", store: "coop-stenbock", price: 69.9, disc: 50, days: 0, qty: 4, unit: "69,90 kr/kg" },
+    { name: "Crème fraiche 2 dl", cat: "Mejeri", store: "lidl-landskrona", price: 17.9, disc: 40, days: 2, qty: 10, unit: "89,50 kr/l" },
+    { name: "Laxwrap", cat: "Färdigmat", store: "ica-borgen", price: 49.9, disc: 50, days: 0, qty: 3, unit: "–" }
+  ];
+
+  items.forEach(function (it) { it.id = it.store + "|" + it.name; });
+
+  var DEFAULT_ME = { lat: 56.0437, lng: 12.6930, label: "Knutpunkten" };
+  var state = { cat: "Alla", store: null, q: "", sort: "discount", me: { lat: DEFAULT_ME.lat, lng: DEFAULT_ME.lng }, meLabel: DEFAULT_ME.label + " (standard)", acc: 0 };
+  var places = [
+    ["Knutpunkten", "Centralstation", 56.0437, 12.6930], ["Stortorget", "Centrum", 56.0473, 12.6950], ["Kärnan", "Centrum", 56.0484, 12.6962],
+    ["Campus Helsingborg", "Centrum", 56.0447, 12.6962], ["Oceanhamnen", "Hamnen", 56.0412, 12.6922], ["Drottninggatan", "Centrum", 56.0500, 12.6900],
+    ["Söder", "Stadsdel", 56.0388, 12.7030], ["Tågaborg", "Stadsdel", 56.0605, 12.6890], ["Stattena", "Stadsdel", 56.0570, 12.7010],
+    ["Pålsjö", "Stadsdel", 56.0730, 12.6720], ["Mariastaden", "Stadsdel", 56.0805, 12.7060], ["Maria station", "Tåg", 56.0738, 12.7110],
+    ["Berga", "Stadsdel", 56.0660, 12.7170], ["Drottninghög", "Stadsdel", 56.0640, 12.7320], ["Dalhem", "Stadsdel", 56.0590, 12.7470],
+    ["Husensjö", "Stadsdel", 56.0565, 12.7270], ["Fredriksdal", "Stadsdel", 56.0505, 12.7150], ["Planteringen", "Stadsdel", 56.0430, 12.7230],
+    ["Eneborg", "Stadsdel", 56.0395, 12.7160], ["Elineberg", "Stadsdel", 56.0355, 12.7310], ["Gustavslund", "Stadsdel", 56.0300, 12.7400],
+    ["Ramlösa", "Stadsdel", 56.0215, 12.7300], ["Ramlösa station", "Tåg", 56.0233, 12.7275], ["Råå", "Stadsdel", 56.0050, 12.7230],
+    ["Råå hamn", "Hamn", 56.0015, 12.7140], ["Olympia", "Arena", 56.0552, 12.7080], ["Helsingborgs lasarett", "Sjukhus", 56.0548, 12.7095],
+    ["Sofiero", "Slott", 56.0830, 12.6590], ["Laröd", "Stadsdel", 56.0905, 12.6560], ["Väla Centrum", "Köpcentrum", 56.0935, 12.7600]
+  ].map(function (r) { return { name: r[0], kind: r[1], lat: r[2], lng: r[3] }; });
+  try {
+    var savedMe = JSON.parse(localStorage.getItem("prisvart-plats") || "null");
+    if (savedMe && typeof savedMe.lat === "number" && typeof savedMe.lng === "number") { state.me = { lat: savedMe.lat, lng: savedMe.lng }; state.meLabel = savedMe.label || "sparad plats"; }
+  } catch (e) {}
+  function setMe(lat, lng, label, acc) {
+    state.me = { lat: lat, lng: lng }; state.meLabel = label; state.acc = acc || 0;
+    try { localStorage.setItem("prisvart-plats", JSON.stringify({ lat: lat, lng: lng, label: label })); } catch (e) {}
+  }
+  var $ = function (id) { return document.getElementById(id); };
+  var fmt = function (n) { return n.toFixed(2).replace(".", ","); };
+  var byId = {}; stores.forEach(function (s) { byId[s.id] = s; });
+  var nowPrice = function (it) { return Math.round(it.price * (100 - it.disc)) / 100; };
+  var esc = function (v) { return String(v).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+
+  /* Geometry */
+  function km(a, b) {
+    var R = 6371, toR = Math.PI / 180;
+    var dLat = (b.lat - a.lat) * toR, dLng = (b.lng - a.lng) * toR;
+    var h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a.lat * toR) * Math.cos(b.lat * toR) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function distText(d) { return d < 1 ? Math.round(d * 1000 / 10) * 10 + " m" : d.toFixed(1).replace(".", ",") + " km"; }
+  function walkText(d) { var m = Math.round(d / 4.8 * 60); return m < 60 ? m + " min promenad" : Math.floor(m / 60) + " h " + (m % 60) + " min promenad"; }
+  var storeKm = function (id) { return km(state.me, byId[id]); };
+
+  var LNG0 = 12.636, LAT0 = 56.102, K = 4768, COS = Math.cos(56.05 * Math.PI / 180);
+  function px(lat, lng) { return { x: (lng - LNG0) * COS * K, y: (LAT0 - lat) * K }; }
+  function unpx(x, y) { return { lat: LAT0 - y / K, lng: LNG0 + x / (COS * K) }; }
+
+  var coast = [[56.102,12.636],[56.090,12.642],[56.080,12.652],[56.070,12.662],[56.062,12.672],[56.054,12.681],[56.047,12.688],[56.041,12.691],[56.034,12.693],[56.026,12.697],[56.018,12.702],[56.010,12.707],[56.003,12.711],[55.994,12.715]];
+  var areas = [["Pålsjö",56.077,12.668],["Mariastaden",56.085,12.712],["Tågaborg",56.061,12.689],["Stattena",56.054,12.703],["Centrum",56.046,12.700],["Söder",56.035,12.712],["Berga",56.069,12.704],["Drottninghög",56.060,12.735],["Fredriksdal",56.050,12.715],["Gustavslund",56.028,12.748],["Råå",56.006,12.725],["Väla",56.098,12.745],["Ödåkra",56.100,12.770]];
+
+  function buildMap() {
+    var c = coast.map(function (p) { return px(p[0], p[1]); });
+    var coastD = c.map(function (p, i) { return (i ? "L" : "M") + p.x.toFixed(1) + " " + p.y.toFixed(1); }).join(" ");
+    var landD = coastD + " L360 510 L360 0 Z";
+    var e6 = [[56.102,12.772],[56.080,12.766],[56.050,12.762],[56.020,12.760],[55.994,12.758]].map(function (p) { var q = px(p[0], p[1]); return q.x.toFixed(1) + "," + q.y.toFixed(1); }).join(" ");
+    var ring = [[56.085,12.700],[56.070,12.735],[56.045,12.740],[56.025,12.730],[56.012,12.722]].map(function (p) { var q = px(p[0], p[1]); return q.x.toFixed(1) + "," + q.y.toFixed(1); }).join(" ");
+    var labels = areas.map(function (a) { var q = px(a[1], a[2]); return '<text class="area" x="' + q.x.toFixed(1) + '" y="' + q.y.toFixed(1) + '" text-anchor="middle">' + a[0] + "</text>"; }).join("");
+    $("map").innerHTML =
+      '<rect class="water" x="0" y="0" width="360" height="510"/>' +
+      '<path class="land" d="' + landD + '"/>' +
+      '<path class="coast" d="' + coastD + '"/>' +
+      '<polyline class="road" points="' + e6 + '"/>' +
+      '<polyline class="road minor" points="' + ring + '"/>' +
+      '<text class="sea" x="22" y="300" transform="rotate(-90 22 300)">ÖRESUND</text>' + labels +
+      '<g id="pins"></g><g id="me"></g>';
+  }
+
+  function renderPins() {
+    var counts = {}; items.forEach(function (it) { counts[it.store] = (counts[it.store] || 0) + 1; });
+    var order = stores.slice().sort(function (a, b) { return (a.id === state.store) - (b.id === state.store); });
+    $("pins").innerHTML = order.map(function (s) {
+      var p = px(s.lat, s.lng), n = counts[s.id] || 0;
+      return '<g class="pin' + (state.store === s.id ? " active" : "") + (n ? "" : " empty") + '" data-store="' + s.id + '" tabindex="0" role="button" aria-label="' + esc(s.name) + ", " + n + ' datumvaror">' +
+        '<circle class="ring" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="14"/>' +
+        '<circle class="dot" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + (state.store === s.id ? 8 : 6) + '"/></g>';
+    }).join("");
+  }
+  function renderMe() {
+    var p = px(state.me.lat, state.me.lng);
+    var off = p.x < 8 || p.x > 352 || p.y < 8 || p.y > 502;
+    var x = Math.min(346, Math.max(14, p.x)), y = Math.min(496, Math.max(14, p.y));
+    var accR = state.acc ? Math.min(140, state.acc / 1000 * K) : 0;
+    var lx = x > 300 ? x - 24 : x + 11;
+    $("me").innerHTML = '<g class="you">' + (accR > 10 && !off ? '<circle class="acc" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + accR.toFixed(1) + '"/>' : "") +
+      '<circle class="halo" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="16"/><circle class="dot" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6"/>' +
+      '<text x="' + lx.toFixed(1) + '" y="' + (y - 8).toFixed(1) + '">' + (off ? "Du ↗" : "Du") + "</text></g>";
+  }
+
+  var months = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+  function expiryText(days) {
+    if (days === 0) return "Bäst före i dag";
+    if (days === 1) return "Bäst före i morgon";
+    var d = new Date(); d.setDate(d.getDate() + days);
+    return "Bäst före " + d.getDate() + " " + months[d.getMonth()];
+  }
+
+  try { var saved = localStorage.getItem("datumfynd-sort"); if (saved) state.sort = saved; } catch (e) {}
+  $("sort").value = state.sort;
+
+  function filtered() {
+    var q = state.q.trim().toLowerCase();
+    return items.filter(function (it) {
+      if (state.cat !== "Alla" && it.cat !== state.cat) return false;
+      if (state.store && it.store !== state.store) return false;
+      if (q && it.name.toLowerCase().indexOf(q) === -1 && byId[it.store].name.toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    }).sort(function (a, b) {
+      if (state.sort === "expiry") return a.days - b.days || b.disc - a.disc;
+      if (state.sort === "distance") return storeKm(a.store) - storeKm(b.store);
+      if (state.sort === "price") return nowPrice(a) - nowPrice(b);
+      return b.disc - a.disc || a.days - b.days;
+    });
+  }
+
+  function renderChips() {
+    $("chips").innerHTML = ["Alla"].concat(cats).map(function (c) {
+      var n = items.filter(function (it) { return (c === "Alla" || it.cat === c) && (!state.store || it.store === state.store); }).length;
+      return '<button type="button" class="chip" data-cat="' + esc(c) + '" aria-pressed="' + (state.cat === c) + '">' + esc(c) + '<span class="n">' + n + "</span></button>";
+    }).join("");
+  }
+
+  /* Product illustrations (inline SVG, viewBox 120x80) */
+  var ART = {
+    carton: function (c) { return '<path d="M47 24h26v44a2 2 0 0 1-2 2H49a2 2 0 0 1-2-2Z" fill="#ffffff" stroke="#d9d3c6"/><path d="M47 24l6-10h14l6 10Z" fill="#f4f1ea" stroke="#d9d3c6"/><rect x="56" y="9" width="8" height="5" rx="1.5" fill="' + c + '"/><rect x="47" y="40" width="26" height="16" fill="' + c + '"/><path d="M53 48c3-4 6-4 7 0s4 4 7 0" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>'; },
+    juice: function () { return ART.carton("#f08a24") + '<circle cx="60" cy="31" r="5" fill="#f6a93b"/><path d="M60 26v-3" stroke="#4c9a5a" stroke-width="2" stroke-linecap="round"/>'; },
+    tub: function (c) { return '<path d="M38 36h44l-4 32a3 3 0 0 1-3 2H45a3 3 0 0 1-3-2Z" fill="#ffffff" stroke="#d9d3c6"/><ellipse cx="60" cy="36" rx="23" ry="6" fill="' + c + '"/><ellipse cx="60" cy="35" rx="18" ry="3.5" fill="#ffffff" opacity=".35"/><rect x="42" y="48" width="36" height="10" fill="' + c + '" opacity=".9"/>'; },
+    tray: function (meat, mark) { return '<rect x="26" y="40" width="68" height="28" rx="6" fill="#ece7dc" stroke="#d9d3c6"/>' + '<ellipse cx="60" cy="50" rx="27" ry="12" fill="' + meat + '"/>' + (mark || ""); },
+    chicken: function () { return ART.tray("#f1c3ad", '<path d="M40 48c8-6 22-6 34-1" stroke="#e3a690" stroke-width="2" fill="none"/><path d="M44 55c8-3 18-3 28 0" stroke="#e3a690" stroke-width="2" fill="none"/>'); },
+    mince: function () { return ART.tray("#c4675a", '<g fill="#e09184"><circle cx="48" cy="47" r="2"/><circle cx="56" cy="53" r="2"/><circle cx="64" cy="46" r="2"/><circle cx="71" cy="53" r="2"/><circle cx="60" cy="49" r="1.6"/><circle cx="52" cy="56" r="1.6"/></g>'); },
+    pork: function () { return ART.tray("#e8a497", '<path d="M38 50h44" stroke="#f6d3cb" stroke-width="3" stroke-linecap="round"/>'); },
+    drumsticks: function () { return '<rect x="26" y="40" width="68" height="28" rx="6" fill="#ece7dc" stroke="#d9d3c6"/><g><ellipse cx="50" cy="50" rx="13" ry="9" fill="#d69a58" transform="rotate(-20 50 50)"/><rect x="60" y="51" width="12" height="4" rx="2" fill="#f4ecdc" transform="rotate(-20 60 51)"/><ellipse cx="66" cy="58" rx="13" ry="9" fill="#c98a4a" transform="rotate(15 66 58)"/><rect x="76" y="58" width="11" height="4" rx="2" fill="#f4ecdc" transform="rotate(15 76 58)"/></g>'; },
+    fish: function (c, s) { return '<path d="M28 52c10-16 52-18 66-4-12 14-54 14-66 4Z" fill="' + c + '"/><g stroke="' + s + '" stroke-width="2" fill="none" stroke-linecap="round"><path d="M42 44c-2 5-2 11 0 16"/><path d="M52 42c-2 6-2 13 0 19"/><path d="M62 41c-2 7-2 14 0 20"/><path d="M72 42c-2 6-2 12 0 18"/><path d="M82 45c-1 4-1 8 0 12"/></g>'; },
+    loaf: function (c, d) { return '<path d="M30 64V48c0-14 60-14 60 0v16a4 4 0 0 1-4 4H34a4 4 0 0 1-4-4Z" fill="' + c + '"/><g stroke="' + d + '" stroke-width="2.4" stroke-linecap="round"><path d="M42 42l6 8"/><path d="M54 39l6 9"/><path d="M66 39l6 9"/></g>'; },
+    figbread: function () { return ART.loaf("#8d5d3e", "#6c4329") + '<g fill="#c9a06a"><circle cx="44" cy="58" r="1.6"/><circle cx="58" cy="60" r="1.6"/><circle cx="72" cy="57" r="1.6"/><circle cx="64" cy="52" r="1.4"/><circle cx="50" cy="52" r="1.4"/></g>'; },
+    baguette: function () { return '<g transform="rotate(-14 60 46)"><rect x="18" y="34" width="84" height="16" rx="8" fill="#d9a35e"/><g stroke="#b47c3a" stroke-width="2.4" stroke-linecap="round"><path d="M32 38l5 8"/><path d="M46 38l5 8"/><path d="M60 38l5 8"/><path d="M74 38l5 8"/><path d="M88 38l5 8"/></g></g><g transform="rotate(-14 60 60)"><rect x="24" y="52" width="76" height="15" rx="7.5" fill="#cf9550"/></g>'; },
+    buns: function () { var b = function (x, y) { return '<circle cx="' + x + '" cy="' + y + '" r="13" fill="#c98a4b"/><path d="M' + (x - 6) + " " + y + "a6 6 0 1 1 6 6a3 3 0 1 1-3-3" + '" stroke="#8f5a28" stroke-width="2" fill="none"/><g fill="#ffffff"><circle cx="' + (x - 4) + '" cy="' + (y - 7) + '" r="1"/><circle cx="' + (x + 5) + '" cy="' + (y - 5) + '" r="1"/><circle cx="' + (x + 2) + '" cy="' + (y + 7) + '" r="1"/></g>'; }; return b(44, 54) + b(76, 54) + b(60, 40); },
+    bananas: function () { return '<g stroke="#b5902a" stroke-width="1.5"><path d="M34 34c4 22 26 32 52 22-20 2-38-8-44-24Z" fill="#f2cc3d"/><path d="M38 30c2 20 22 32 48 26-22-2-38-12-42-28Z" fill="#f6d65a"/><path d="M42 28c0 18 18 30 44 28-20-6-34-14-38-30Z" fill="#f2cc3d"/></g><path d="M36 30l6-6" stroke="#6b5a2a" stroke-width="3" stroke-linecap="round"/>'; },
+    leaves: function () { var l = function (x, y, r, c) { return '<path d="M0 0c8-12 26-12 30 0-4 12-22 12-30 0Z" fill="' + c + '" transform="translate(' + x + " " + y + ") rotate(" + r + ')"/><path d="M0 0h28" stroke="#ffffff" stroke-opacity=".5" stroke-width="1.2" transform="translate(' + x + " " + y + ") rotate(" + r + ')"/>'; }; return l(30, 56, -20, "#3f8a4e") + l(56, 60, -60, "#57a565") + l(60, 50, 10, "#4c9a5a") + l(44, 44, -40, "#6bb36f"); },
+    wok: function () { return '<path d="M26 46h68c0 14-14 22-34 22s-34-8-34-22Z" fill="#ffffff" stroke="#d9d3c6"/><g stroke-linecap="round"><path d="M38 44l12-12" stroke="#f08a24" stroke-width="5"/><path d="M52 44l6-14" stroke="#f08a24" stroke-width="5"/><path d="M62 44l10-12" stroke="#4c9a5a" stroke-width="4"/><path d="M76 44l4-12" stroke="#4c9a5a" stroke-width="4"/></g><path d="M44 42c4-8 12-8 14 0Z" fill="#d9452f"/><path d="M66 42c3-6 9-6 11 0Z" fill="#f2cc3d"/>'; },
+    tomatoes: function () { var t = function (x, y, r) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="#d9452f"/><circle cx="' + (x - r / 3) + '" cy="' + (y - r / 3) + '" r="' + r / 4 + '" fill="#ffffff" opacity=".35"/><path d="M' + (x - 4) + " " + (y - r + 1) + "l4 2 4-2-4 0Z" + '" fill="#3f8a4e" stroke="#3f8a4e" stroke-width="2" stroke-linejoin="round"/>'; }; return t(46, 56, 11) + t(70, 58, 10) + t(58, 40, 10) + t(80, 42, 8); },
+    avocado: function () { return '<path d="M44 22c10 0 18 14 18 28s-8 20-18 20-18-6-18-20 8-28 18-28Z" fill="#3f6b2f"/><path d="M44 28c7 0 13 11 13 22s-6 15-13 15-13-4-13-15 6-22 13-22Z" fill="#cddc8f"/><circle cx="44" cy="52" r="7" fill="#8a5a3a"/><path d="M78 22c10 0 18 14 18 28s-8 20-18 20-18-6-18-20 8-28 18-28Z" fill="#2f5524"/><path d="M78 28c7 0 13 11 13 22s-6 15-13 15-13-4-13-15 6-22 13-22Z" fill="#cddc8f"/><circle cx="78" cy="52" r="7" fill="#e6efb8"/>'; },
+    cheese: function () { return '<path d="M28 58l50-26 16 14v18H28Z" fill="#f2c94c"/><path d="M28 58l50-26 16 14-66 12Z" fill="#f7da6e"/><g fill="#d9a92e"><circle cx="48" cy="62" r="3.5"/><circle cx="72" cy="60" r="2.5"/><circle cx="84" cy="56" r="3"/><circle cx="62" cy="66" r="2"/></g>'; },
+    salad: function () { return '<path d="M26 44h68c0 16-14 24-34 24S26 60 26 44Z" fill="#ffffff" stroke="#d9d3c6"/><g><circle cx="42" cy="42" r="7" fill="#6bb36f"/><circle cx="56" cy="38" r="8" fill="#4c9a5a"/><circle cx="72" cy="40" r="7" fill="#6bb36f"/><circle cx="82" cy="43" r="5" fill="#57a565"/></g><g stroke="#e9c46a" stroke-width="3.5" stroke-linecap="round"><path d="M46 44l8-4"/><path d="M62 44l8-5"/></g><rect x="50" y="40" width="8" height="5" rx="1.5" fill="#f1c3ad"/><rect x="68" y="42" width="8" height="5" rx="1.5" fill="#f1c3ad"/>'; },
+    lasagne: function () { var s = function (y, c) { return '<path d="M28 ' + y + "q5 -3 10 0t10 0t10 0t10 0t10 0t10 0t6 0v8H28Z" + '" fill="' + c + '"/>'; }; return s(58, "#e9c46a") + s(50, "#f0d58a") + s(42, "#f4dd9c") + s(34, "#f0d58a"); },
+    pizza: function () { return '<circle cx="60" cy="48" r="26" fill="#e8c27a"/><circle cx="60" cy="48" r="21" fill="#c94a32"/><circle cx="60" cy="48" r="21" fill="none" stroke="#e8c27a" stroke-width="2" stroke-dasharray="2 6"/>'; },
+    cake: function () { return '<rect x="30" y="40" width="60" height="26" rx="3" fill="#f3e3c3"/><rect x="30" y="47" width="60" height="5" fill="#f1b7a2"/><rect x="30" y="57" width="60" height="4" fill="#bcd9a2"/><rect x="30" y="34" width="60" height="7" rx="3" fill="#ffffff" stroke="#e5dccb"/><g><circle cx="40" cy="33" r="3" fill="#d9452f"/><circle cx="52" cy="32" r="3" fill="#f2cc3d"/><circle cx="64" cy="33" r="3" fill="#4c9a5a"/><circle cx="76" cy="32" r="3" fill="#f1b7a2"/><circle cx="86" cy="33" r="2.5" fill="#d9452f"/></g>'; },
+    wrap: function () { return '<g transform="rotate(-18 60 48)"><rect x="28" y="38" width="64" height="20" rx="10" fill="#e9d3a7"/><ellipse cx="88" cy="48" rx="7" ry="10" fill="#f1b7a2"/><ellipse cx="88" cy="48" rx="4" ry="6" fill="#6bb36f"/><path d="M40 40c4 6 4 12 0 16" stroke="#d6bb86" stroke-width="1.6" fill="none"/></g>'; },
+    hummus: function () { return ART.tub("#c9a06a") + '<path d="M54 30c4-3 8-3 12 0" stroke="#7a9a3a" stroke-width="2" fill="none" stroke-linecap="round"/>'; }
+  };
+  var TINT = { "Mejeri": "var(--tint-mejeri)", "Kött & fisk": "var(--tint-kott)", "Bröd": "var(--tint-brod)", "Frukt & grönt": "var(--tint-frukt)", "Färdigmat": "var(--tint-fardig)" };
+  function artKey(it) {
+    var n = it.name.toLowerCase();
+    var rules = [
+      [/wrap/, "wrap"], [/juice/, "juice"], [/mjölk/, "milk"], [/hummus/, "hummus"], [/yoghurt|kvarg|crème|creme|(^|\s)fil(\s|$)/, "tub"],
+      [/klubb/, "drumsticks"], [/kyckling(?!sallad)/, "chicken"], [/färs/, "mince"], [/fläsk|filé(?!.*(lax|torsk))/, "pork"],
+      [/lax/, "salmon"], [/torsk|fisk/, "cod"], [/baguette/, "baguette"], [/bull/, "buns"], [/fikon/, "figbread"], [/bröd|limpa/, "loaf"],
+      [/banan/, "bananas"], [/spenat|sallad(?!.*kyckling)|ruccola/, "leaves"], [/wok|grönsak/, "wok"], [/tomat/, "tomatoes"], [/avokado/, "avocado"],
+      [/ost/, "cheese"], [/sallad/, "salad"], [/lasagne/, "lasagne"], [/pizza/, "pizza"], [/tårta/, "cake"], [/wrap/, "wrap"]
+    ];
+    for (var i = 0; i < rules.length; i++) if (rules[i][0].test(n)) return rules[i][1];
+    return { "Mejeri": "milk", "Kött & fisk": "chicken", "Bröd": "loaf", "Frukt & grönt": "leaves", "Färdigmat": "salad" }[it.cat] || "salad";
+  }
+  function artSvg(it) {
+    var k = artKey(it), body;
+    if (k === "milk") body = ART.carton(/lätt/i.test(it.name) ? "#4f8fd0" : "#2f6fb5");
+    else if (k === "tub") body = ART.tub(/kvarg/i.test(it.name) ? "#e9c46a" : /crème|creme/i.test(it.name) ? "#3e7cc0" : "#7aa7d6");
+    else if (k === "salmon") body = ART.fish("#f39a75", "#fbd2bf");
+    else if (k === "cod") body = ART.fish("#f1ebdf", "#d9cfbd");
+    else if (k === "loaf") body = ART.loaf("#c98a4b", "#a86a33");
+    else body = (ART[k] || ART.salad)();
+    return '<svg viewBox="0 0 120 80" role="img" aria-label="' + esc(it.name) + '"><ellipse cx="60" cy="70" rx="38" ry="4" fill="#000000" opacity=".06"/>' + body + "</svg>";
+  }
+  function picHtml(it, cls) {
+    var bg = TINT[it.cat] || "var(--bg-alt)";
+    var inner = it.img ? '<img src="' + esc(it.img) + '" alt="' + esc(it.name) + '" loading="lazy" data-fallback="1">' + '<span class="art-fb" hidden>' + artSvg(it) + "</span>" : artSvg(it);
+    return '<div class="' + cls + '" style="background:' + bg + '">' + inner;
+  }
+
+  var pinIcon = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 11s4-3.6 4-6.5A4 4 0 0 0 2 4.5C2 7.4 6 11 6 11Z" stroke="currentColor" stroke-width="1.4"/><circle cx="6" cy="4.6" r="1.4" fill="currentColor"/></svg>';
+
+  function renderGrid() {
+    var list = filtered();
+    if (!list.length) {
+      $("grid").innerHTML = '<div class="empty" style="grid-column:1/-1"><b>Inga varor matchar</b>Prova en annan kategori, en annan butik eller ta bort sökordet.</div>';
+      return;
+    }
+    $("grid").innerHTML = list.map(function (it) {
+      var s = byId[it.store], d = storeKm(it.store), inCart = cart.indexOf(it.id) > -1;
+      return '<article class="item">' + picHtml(it, "pic") +
+        '<span class="sticker" aria-label="' + it.disc + ' procent rabatt">−' + it.disc + "%</span></div>" +
+        '<div class="item-top"><p class="store-line"><b>' + esc(s.name) + "</b>" + esc(s.addr) + "</p></div>" +
+        "<div><h3>" + esc(it.name) + '</h3><p class="meta">' + (it.unit !== "–" ? "Jmf-pris ord. " + esc(it.unit) + " · " : "") + esc(it.cat) + "</p></div>" +
+        '<div class="tags"><span class="expiry' + (it.days === 0 ? " soon" : "") + '">' + expiryText(it.days) + "</span>" +
+        '<button type="button" class="dist" data-show="' + s.id + '" title="Visa på kartan, ' + walkText(d) + '" aria-label="' + distText(d) + ' bort, visa på kartan">' + pinIcon + distText(d) + "</button></div>" +
+        '<div class="price-row"><div class="price"><span class="was"><s>' + fmt(it.price) + ' kr</s><span class="left">' + it.qty + " kvar</span></span>" +
+        '<span class="now">' + fmt(nowPrice(it)) + " <small>kr</small></span></div>" +
+        '<button type="button" class="btn sm addbtn' + (inCart ? " added" : "") + '" data-add="' + esc(it.id) + '" aria-pressed="' + inCart + '">' + (inCart ? "I listan ✓" : "Lägg i listan") + "</button></div>" +
+        "</article>";
+    }).join("");
+  }
+
+  function renderFoot() {
+    var s = state.store ? byId[state.store] : null;
+    $("activeStore").hidden = !s;
+    $("mapReset").hidden = !s;
+    if (s) {
+      var n = items.filter(function (it) { return it.store === s.id; }).length;
+      $("activeStoreText").innerHTML = "Visar varor från <b>" + esc(s.name) + "</b>, " + esc(s.addr);
+      $("mapFoot").innerHTML = "<b>" + esc(s.name) + "</b> · " + n + " datumvaror · " + distText(storeKm(s.id)) + " från dig, ca " + walkText(storeKm(s.id));
+    } else {
+      $("mapFoot").innerHTML = (state.gpsFail ? "Platsen kunde inte hämtas automatiskt. " : "") + "Din plats: <b>" + esc(state.meLabel) + "</b>. " + (state.gpsFail ? "Tryck på <b>Välj plats</b> eller på kartan där du är. " : "Tryck på kartan för att flytta den, eller på en butik för att se dess varor. ") +
+        '<span class="map-attrib">' + stores.length + " butiker. Butiksplatser: Google.</span>";
+    }
+  }
+
+  function renderFacts() {
+    $("factItems").textContent = items.length;
+    $("factStores").textContent = stores.length;
+    var near = stores.reduce(function (best, s) { var d = storeKm(s.id); return d < best ? d : best; }, 99);
+    $("factAvg").textContent = distText(near);
+  }
+
+  /* Shopping list */
+  var cart = [], mode = "walking", tab = "offers";
+  try { cart = JSON.parse(localStorage.getItem("datumfynd-lista") || "[]") || []; } catch (e) { cart = []; }
+  try { mode = localStorage.getItem("datumfynd-fardsatt") || "walking"; } catch (e) {}
+  var itemById = function (id) { return items.filter(function (it) { return it.id === id; })[0]; };
+  function saveCart() { try { localStorage.setItem("datumfynd-lista", JSON.stringify(cart)); } catch (e) {} }
+  function cartItems() { return cart.map(itemById).filter(Boolean); }
+  var SPEED = { walking: 4.8, bicycling: 15, driving: 28 };
+  var MODE_WORD = { walking: "promenad", bicycling: "cykel", driving: "bil" };
+  function timeText(d) { var m = Math.max(1, Math.round(d / SPEED[mode] * 60)); return m < 60 ? m + " min" : Math.floor(m / 60) + " h " + (m % 60) + " min"; }
+
+  function bestOrder(ids) {
+    var pts = ids.map(function (id) { return byId[id]; });
+    var n = pts.length; if (n < 2) return ids.slice();
+    var best = null, bestD = Infinity;
+    function legSum(order) { var d = 0, prev = state.me; order.forEach(function (i) { d += km(prev, pts[i]); prev = pts[i]; }); return d; }
+    if (n <= 8) {
+      var perm = function (arr, l) {
+        if (l === arr.length) { var d = legSum(arr); if (d < bestD) { bestD = d; best = arr.slice(); } return; }
+        for (var i = l; i < arr.length; i++) { var t = arr[l]; arr[l] = arr[i]; arr[i] = t; perm(arr, l + 1); t = arr[l]; arr[l] = arr[i]; arr[i] = t; }
+      };
+      perm(pts.map(function (_, i) { return i; }), 0);
+    } else {
+      var left = pts.map(function (_, i) { return i; }), prev = state.me; best = [];
+      while (left.length) {
+        left.sort(function (a, b) { return km(prev, pts[a]) - km(prev, pts[b]); });
+        var nx = left.shift(); best.push(nx); prev = pts[nx];
+      }
+    }
+    return best.map(function (i) { return ids[i]; });
+  }
+  function ll(p) { return p.lat.toFixed(6) + "," + p.lng.toFixed(6); }
+  function mapsUrl(order) {
+    var dest = byId[order[order.length - 1]];
+    var url = "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(ll(state.me)) +
+      "&destination=" + encodeURIComponent(ll(dest)) + "&travelmode=" + mode;
+    if (order.length > 1) url += "&waypoints=" + encodeURIComponent(order.slice(0, -1).map(function (id) { return ll(byId[id]); }).join("|"));
+    return url;
+  }
+  function singleUrl(s) {
+    return "https://www.google.com/maps/dir/?api=1&origin=" + encodeURIComponent(ll(state.me)) + "&destination=" + encodeURIComponent(ll(s)) + "&travelmode=" + mode;
+  }
+
+  function renderList() {
+    var list = cartItems();
+    if (list.length !== cart.length) { cart = list.map(function (it) { return it.id; }); saveCart(); }
+    $("listCount").textContent = list.length;
+    $("headerCount").textContent = list.length;
+    $("bbCount").textContent = list.length; $("bbCount").hidden = list.length === 0;
+    $("offersCount").textContent = items.length;
+    $("listEmpty").hidden = list.length > 0;
+    $("listFull").hidden = list.length === 0;
+    if (!list.length) return;
+
+    var storeIds = []; list.forEach(function (it) { if (storeIds.indexOf(it.store) === -1) storeIds.push(it.store); });
+    var order = bestOrder(storeIds);
+    var total = 0, pay = 0, prev = state.me, legs = [];
+    order.forEach(function (id) { var d = km(prev, byId[id]); legs.push(d); total += d; prev = byId[id]; });
+    list.forEach(function (it) { pay += nowPrice(it); });
+    var was = list.reduce(function (a, it) { return a + it.price; }, 0);
+
+    $("routeTitle").textContent = order.length + (order.length === 1 ? " butik" : " butiker") + " · " + distText(total) + " · ca " + timeText(total) + " " + MODE_WORD[mode];
+    $("sumCount").textContent = list.length;
+    $("sumPay").textContent = fmt(pay) + " kr";
+    $("sumSave").textContent = fmt(was - pay) + " kr";
+    $("listMeta").textContent = list.length + (list.length === 1 ? " vara" : " varor") + " i " + order.length + (order.length === 1 ? " butik" : " butiker");
+
+    $("stops").innerHTML = '<li><span class="no start">•</span><span class="nm">Din plats<small>' + esc(state.meLabel) + "</small></span><span class=\"leg\"></span></li>" +
+      order.map(function (id, i) {
+        var s = byId[id];
+        return '<li><span class="no">' + (i + 1) + '</span><span class="nm">' + esc(s.name) + "<small>" + esc(s.addr) + '</small></span><span class="leg">+' + distText(legs[i]) + "</span></li>";
+      }).join("");
+    $("routeLink").href = mapsUrl(order);
+    var modeInput = document.querySelector('.modes input[value="' + mode + '"]'); if (modeInput) modeInput.checked = true;
+
+    $("groups").innerHTML = order.map(function (id, i) {
+      var s = byId[id], rows = list.filter(function (it) { return it.store === id; });
+      var sub = rows.reduce(function (a, it) { return a + nowPrice(it); }, 0);
+      return '<section class="lgroup" aria-label="' + esc(s.name) + '">' +
+        '<div class="lgroup-head"><span class="no" title="Stopp ' + (i + 1) + ' på rutten">' + (i + 1) + '</span>' +
+        '<div class="who"><h3>' + esc(s.name) + "</h3><p>" + esc(s.addr) + " · " + distText(storeKm(id)) + " från din plats</p></div>" +
+        '<a href="' + singleUrl(s) + '" target="_blank" rel="noopener">Vägbeskrivning</a></div>' +
+        '<ul class="lrows">' + rows.map(function (it) {
+          return '<li class="lrow">' + picHtml(it, "thumb") + '</div><span class="nm">' + esc(it.name) + '<small class="' + (it.days === 0 ? "soon" : "") + '">' + expiryText(it.days) + " · −" + it.disc + "%</small></span>" +
+            '<span class="pr"><s>' + fmt(it.price) + " kr</s><b>" + fmt(nowPrice(it)) + " kr</b></span>" +
+            '<button type="button" class="remove" data-remove="' + esc(it.id) + '" aria-label="Ta bort ' + esc(it.name) + '"><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button></li>';
+        }).join("") + "</ul>" +
+        '<div class="lgroup-foot"><span>' + rows.length + (rows.length === 1 ? " vara" : " varor") + "</span><span>Summa <b>" + fmt(sub) + " kr</b></span></div></section>";
+    }).join("");
+  }
+
+  function setTab(t, scroll) {
+    tab = t;
+    $("tabOffers").setAttribute("aria-selected", t === "offers");
+    $("tabList").setAttribute("aria-selected", t === "list");
+    $("panelOffers").hidden = t !== "offers";
+    $("panelList").hidden = t !== "list";
+    if (scroll) scrollToEl($("tabOffers").parentNode, 0);
+    if (barCur === "offers" || barCur === "list") setBar(t);
+  }
+  /* Bottom bar */
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+  var barLock = 0, barCur = null;
+  function setBar(cur) {
+    if (cur === barCur) return; barCur = cur;
+    [["bbMap", "karta"], ["bbOffers", "offers"], ["bbList", "list"], ["bbStores", "butiker"]].forEach(function (x) {
+      $(x[0]).setAttribute("aria-current", cur === x[1] ? "true" : "false");
+    });
+  }
+  function updateBar() {
+    if (Date.now() < barLock) return;
+    var line = window.innerHeight * 0.35;
+    var v = $("varor").getBoundingClientRect(), h = $("sa-funkar-det").getBoundingClientRect(), b = $("butiker").getBoundingClientRect();
+    var atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
+    var cur;
+    if (b.top <= line || atEnd) cur = "butiker";
+    else if (h.top <= line) cur = "none";
+    else if (v.top <= line) cur = tab === "list" ? "list" : "offers";
+    else cur = "karta";
+    setBar(cur);
+  }
+  function headerH() { var hd = document.querySelector(".site-header"); return hd ? hd.offsetHeight : 56; }
+  function scrollToEl(el, extra) {
+    var y = el.getBoundingClientRect().top + window.scrollY - headerH() - (extra || 0);
+    window.scrollTo({ top: Math.max(0, y), behavior: reduceMotion ? "auto" : "smooth" });
+  }
+  var barTick = false;
+  window.addEventListener("scroll", function () { if (barTick) return; barTick = true; requestAnimationFrame(function () { barTick = false; updateBar(); }); }, { passive: true });
+  window.addEventListener("scrollend", function () { barLock = 0; updateBar(); });
+  document.querySelector(".bottombar").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-go]"); if (!b) return;
+    var go = b.getAttribute("data-go");
+    setBar(go); barLock = Date.now() + 1000;
+    if (go === "offers" || go === "list") { setTab(go); scrollToEl($("tabOffers").parentNode, 0); }
+    else if (go === "karta") scrollToEl($("karta"), 12);
+    else scrollToEl($(go), -8);
+  });
+  /* Hide the bar while typing so it doesn't sit on top of the keyboard */
+  var bar = document.querySelector(".bottombar");
+  var isField = function (el) { return el && el.matches && el.matches("input:not([type=range]):not([type=radio]):not([type=file]), select, textarea"); };
+  document.addEventListener("focusin", function (e) { if (isField(e.target)) bar.classList.add("away"); });
+  document.addEventListener("focusout", function () { setTimeout(function () { if (!isField(document.activeElement)) bar.classList.remove("away"); }, 60); });
+
+  function measureHeader() { try { document.documentElement.style.setProperty("--hdr", document.querySelector(".site-header").offsetHeight + "px"); } catch (e) {} }
+  window.addEventListener("resize", measureHeader);
+  function bump() { ["listCount", "headerCount"].forEach(function (id) { var el = $(id); el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }); }
+
+  function render() { renderChips(); renderGrid(); renderPins(); renderMe(); renderFoot(); renderFacts(); renderList(); }
+
+  var toastTimer;
+  function toast(msg) {
+    var t = $("toast"); t.textContent = msg; t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove("show"); }, 3200);
+  }
+
+  function selectStore(id, force) {
+    state.store = (state.store === id && !force) ? null : id;
+    render();
+  }
+
+  /* Map interaction */
+  $("map").addEventListener("click", function (e) {
+    var pin = e.target.closest(".pin");
+    if (pin) { selectStore(pin.getAttribute("data-store")); return; }
+    var svg = $("map"), pt = svg.createSVGPoint();
+    pt.x = e.clientX; pt.y = e.clientY;
+    var m = svg.getScreenCTM(); if (!m) return;
+    var loc = pt.matrixTransform(m.inverse());
+    var ll = unpx(loc.x, loc.y);
+    setMe(ll.lat, ll.lng, "vald på kartan", 0);
+    $("locPick").hidden = true;
+    render();
+    toast("Din plats är flyttad. Avstånden är uppdaterade.");
+  });
+  $("map").addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    var pin = e.target.closest(".pin"); if (!pin) return;
+    e.preventDefault(); var id = pin.getAttribute("data-store"); selectStore(id);
+    var again = document.querySelector('.pin[data-store="' + id + '"]'); if (again) again.focus();
+  });
+
+  /* Location */
+  function nearestPlace(lat, lng) {
+    var best = null, bd = Infinity;
+    places.concat(stores).forEach(function (pl) { var d = km({ lat: lat, lng: lng }, pl); if (d < bd) { bd = d; best = pl; } });
+    return bd < 1.2 ? best.name : null;
+  }
+  function openPicker(msg) {
+    $("locPick").hidden = false;
+    renderSugg("");
+    if (msg) toast(msg);
+    setTimeout(function () { try { $("locQ").focus({ preventScroll: true }); } catch (e) {} }, 50);
+  }
+  function renderSugg(q) {
+    q = q.trim().toLowerCase();
+    var pool = places.map(function (pl) { return { name: pl.name, kind: pl.kind, lat: pl.lat, lng: pl.lng }; })
+      .concat(stores.map(function (st) { return { name: st.name, kind: st.addr, lat: st.lat, lng: st.lng }; }));
+    var list = q ? pool.filter(function (pl) { return pl.name.toLowerCase().indexOf(q) > -1 || pl.kind.toLowerCase().indexOf(q) > -1; }) : pool.slice(0, 12);
+    $("locSugg").innerHTML = list.slice(0, 30).map(function (pl, i) {
+      return '<li><button type="button" data-loc="' + pool.indexOf(pl) + '">' + esc(pl.name) + "<small>" + esc(pl.kind) + "</small></button></li>";
+    }).join("") || '<li class="lochint" style="padding:8px 10px">Hittade ingen plats som heter så. Prova en stadsdel, eller tryck på kartan.</li>';
+    $("locSugg")._pool = pool;
+  }
+  $("locBtn").addEventListener("click", function () { if ($("locPick").hidden) openPicker(); else $("locPick").hidden = true; });
+  $("locQ").addEventListener("input", function (e) { renderSugg(e.target.value); });
+  $("locQ").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); var first = $("locSugg").querySelector("[data-loc]"); if (first) first.click(); }
+    if (e.key === "Escape") $("locPick").hidden = true;
+  });
+  $("locSugg").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-loc]"); if (!b) return;
+    var pl = $("locSugg")._pool[+b.getAttribute("data-loc")];
+    setMe(pl.lat, pl.lng, pl.name, 0);
+    $("locPick").hidden = true; $("locQ").value = "";
+    render(); toast("Din plats: " + pl.name + ". Avstånden är uppdaterade.");
+  });
+
+  var gpsBusy = false;
+  function gpsDone() { gpsBusy = false; $("gpsBtn").classList.remove("busy"); $("gpsLbl").textContent = "Min plats"; }
+  function useGps(silent) {
+    if (gpsBusy) return;
+    if (!navigator.geolocation || (window.isSecureContext === false)) {
+      if (silent === "auto") { state.gpsFail = true; renderFoot(); }
+      if (!silent) openPicker("Din webbläsare delar inte platsen här. Välj var du är i listan i stället.");
+      return;
+    }
+    gpsBusy = true; $("gpsBtn").classList.add("busy"); $("gpsLbl").textContent = "Söker…";
+    var got = false;
+    var guard = setTimeout(function () {
+      if (got) return; gpsDone();
+      if (silent === "auto") { state.gpsFail = true; renderFoot(); }
+      if (!silent) openPicker("Platsen svarade inte. Välj var du är i listan i stället.");
+    }, 12000);
+    try {
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        if (got) return; got = true; clearTimeout(guard); gpsDone();
+        state.gpsFail = false;
+        var lat = pos.coords.latitude, lng = pos.coords.longitude, acc = pos.coords.accuracy || 0;
+        var near = nearestPlace(lat, lng);
+        setMe(lat, lng, near ? "nära " + near : "din GPS-position", acc);
+        $("locPick").hidden = true;
+        render();
+        var dHbg = km({ lat: lat, lng: lng }, DEFAULT_ME);
+        if (dHbg > 15) toast("Du verkar vara " + distText(dHbg) + " från Helsingborg. Avstånden räknas från din riktiga plats.");
+        else if (silent !== true) toast("Din plats är hittad" + (acc > 300 ? ", ungefär (±" + Math.round(acc / 10) * 10 + " m)" : "") + ".");
+      }, function (err) {
+        if (got) return; got = true; clearTimeout(guard); gpsDone();
+        if (silent === "auto") { state.gpsFail = true; renderFoot(); }
+        if (silent) return;
+        if (err && err.code === 1) openPicker("Platsdelning är avstängd för sidan. Tillåt plats i webbläsaren, eller välj var du är i listan.");
+        else openPicker("Platsen gick inte att hitta just nu. Välj var du är i listan i stället.");
+      }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
+    } catch (err) { clearTimeout(guard); gpsDone(); if (!silent) openPicker("Platsen gick inte att hämta här. Välj var du är i listan i stället."); }
+  }
+  $("gpsBtn").addEventListener("click", function () { useGps(false); });
+  /* Look up the visitor's position as soon as the page opens */
+  setTimeout(function () { useGps("auto"); }, 300);
+
+  $("chips").addEventListener("click", function (e) {
+    var b = e.target.closest(".chip"); if (!b) return;
+    state.cat = b.getAttribute("data-cat"); render();
+  });
+  $("sort").addEventListener("change", function (e) {
+    state.sort = e.target.value;
+    try { localStorage.setItem("datumfynd-sort", state.sort); } catch (err) {}
+    renderGrid();
+  });
+  $("q").addEventListener("input", function (e) { state.q = e.target.value; renderGrid(); });
+  $("searchForm").addEventListener("submit", function (e) {
+    e.preventDefault(); state.q = $("q").value; renderGrid();
+    $("varor").scrollIntoView({ behavior: "smooth" });
+  });
+  $("tabOffers").addEventListener("click", function () { setTab("offers"); });
+  $("tabList").addEventListener("click", function () { setTab("list"); });
+  $("headerList").addEventListener("click", function () { setTab("list", true); });
+  $("goOffers").addEventListener("click", function () { setTab("offers"); });
+  $("groups").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-remove]"); if (!b) return;
+    var id = b.getAttribute("data-remove"), at = cart.indexOf(id);
+    if (at > -1) cart.splice(at, 1);
+    saveCart(); renderGrid(); renderList();
+  });
+  var clearArmed = false, clearTimer;
+  $("clearList").addEventListener("click", function () {
+    if (!clearArmed) {
+      clearArmed = true; $("clearList").textContent = "Tryck igen för att tömma";
+      clearTimer = setTimeout(function () { clearArmed = false; $("clearList").textContent = "Töm listan"; }, 3000);
+      return;
+    }
+    clearTimeout(clearTimer); clearArmed = false; $("clearList").textContent = "Töm listan";
+    cart = []; saveCart(); renderGrid(); renderList(); toast("Inköpslistan är tömd.");
+  });
+  document.querySelectorAll('.modes input').forEach(function (r) {
+    r.addEventListener("change", function () { mode = r.value; try { localStorage.setItem("datumfynd-fardsatt", mode); } catch (e) {} renderList(); });
+  });
+  function fromHash() { if (location.hash === "#inkopslista") setTab("list"); }
+  window.addEventListener("hashchange", fromHash);
+
+  $("mapReset").addEventListener("click", function () { state.store = null; render(); });
+  $("clearStore").addEventListener("click", function () { state.store = null; render(); });
+  document.addEventListener("error", function (e) {
+    var img = e.target;
+    if (!img || img.tagName !== "IMG" || !img.hasAttribute("data-fallback")) return;
+    var fb = img.nextElementSibling; if (fb) fb.hidden = false;
+    img.remove();
+  }, true);
+  $("grid").addEventListener("click", function (e) {
+    var add = e.target.closest("[data-add]");
+    if (add) {
+      var id = add.getAttribute("data-add"), at = cart.indexOf(id), it = itemById(id);
+      if (at > -1) { cart.splice(at, 1); toast(it.name + " är borttagen från listan."); }
+      else { cart.push(id); toast(it.name + " ligger i listan. " + cart.length + (cart.length === 1 ? " vara" : " varor") + " totalt."); }
+      saveCart(); renderGrid(); renderList(); bump();
+      return;
+    }
+    var b = e.target.closest("[data-show]"); if (!b) return;
+    selectStore(b.getAttribute("data-show"), true);
+    $("karta").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  /* Store form */
+  $("fCat").innerHTML = cats.map(function (c) { return "<option" + (c === "Kött & fisk" ? " selected" : "") + ">" + esc(c) + "</option>"; }).join("");
+  $("fStore").innerHTML = stores.slice().sort(function (a, b) { return a.name.localeCompare(b.name, "sv"); }).map(function (s) { return '<option value="' + s.id + '">' + esc(s.name) + "</option>"; }).join("");
+  $("fStore").value = "coop-knutpunkten";
+  function updateCalc() {
+    var p = parseFloat($("fPrice").value) || 0, d = +$("fDisc").value;
+    $("discOut").textContent = d + " %";
+    $("newPrice").textContent = fmt(Math.round(p * (100 - d)) / 100) + " kr";
+  }
+  ["fPrice", "fDisc"].forEach(function (id) { $(id).addEventListener("input", updateCalc); });
+  updateCalc();
+
+  /* Barcode scanning */
+  var localProducts = {
+    "7310865004703": { name: "Mellanmjölk 1,5 % 1,5 l", cat: "Mejeri" },
+    "7311440012250": { name: "Kvarg vanilj 500 g", cat: "Mejeri" },
+    "7300400118545": { name: "Fullkornsbaguette 2-pack", cat: "Bröd" },
+    "7340083420917": { name: "Wokgrönsaker 400 g", cat: "Frukt & grönt" }
+  };
+  function setStatus(msg, kind) { var el = $("scanStatus"); el.textContent = msg; el.className = "scan-status" + (kind ? " " + kind : ""); }
+  function validEan(code) {
+    if (!/^\d{8}$|^\d{12,14}$/.test(code)) return false;
+    var digits = code.split("").map(Number), check = digits.pop(), sum = 0;
+    digits.reverse().forEach(function (d, i) { sum += d * (i % 2 === 0 ? 3 : 1); });
+    return (10 - (sum % 10)) % 10 === check;
+  }
+  function guessCat(tags) {
+    var t = (tags || []).join(" ");
+    if (/meat|fish|seafood|poultry|chicken|sausage/.test(t)) return "Kött & fisk";
+    if (/dair|milk|cheese|yogurt|butter|cream/.test(t)) return "Mejeri";
+    if (/bread|bakery|pastr|bun/.test(t)) return "Bröd";
+    if (/fruit|vegetable|salad/.test(t)) return "Frukt & grönt";
+    return "Färdigmat";
+  }
+  function fillProduct(code, name, cat, source) {
+    $("fName").value = name; if (cat) $("fCat").value = cat;
+    setStatus(name + " (" + source + "). Fyll i pris och rabatt.", "ok");
+    $("fPrice").focus();
+  }
+  var scanImg = "";
+  function lookup(code) {
+    scanImg = "";
+    code = String(code).replace(/\D/g, "");
+    $("fEan").value = code;
+    if (!validEan(code)) { setStatus("Numret " + (code || "") + " är inte en giltig streckkod. Kontrollera siffrorna.", "err"); return; }
+    setStatus("Streckkod " + code + " läst. Söker varan…");
+    var ctrl = window.AbortController ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 6000);
+    var fallback = function () {
+      clearTimeout(timer);
+      var p = localProducts[code];
+      if (p) fillProduct(code, p.name, p.cat, "från lokal lista");
+      else { setStatus("Streckkod " + code + " läst, men varan hittades inte. Skriv namnet själv.", "err"); $("fName").value = ""; $("fName").focus(); }
+    };
+    try {
+      fetch("https://world.openfoodfacts.org/api/v2/product/" + code + ".json?fields=product_name,product_name_sv,quantity,categories_tags,brands,image_front_small_url,image_front_url", ctrl ? { signal: ctrl.signal } : {})
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          clearTimeout(timer);
+          var pr = data && data.status === 1 && data.product;
+          var nm = pr && (pr.product_name_sv || pr.product_name);
+          if (!nm) return fallback();
+          var full = nm + (pr.quantity && nm.indexOf(pr.quantity) === -1 ? " " + pr.quantity : "");
+          scanImg = pr.image_front_small_url || pr.image_front_url || "";
+          fillProduct(code, full, guessCat(pr.categories_tags), "från Open Food Facts");
+        })
+        .catch(fallback);
+    } catch (err) { fallback(); }
+  }
+
+  var cam = null;
+  function formats() {
+    var F = window.Html5QrcodeSupportedFormats;
+    return F ? [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E] : undefined;
+  }
+  function stopCam() {
+    var done = function () { $("reader").hidden = true; $("camStop").hidden = true; $("camBtn").hidden = false; cam = null; };
+    if (cam) { cam.stop().then(function () { try { cam.clear(); } catch (e) {} done(); }).catch(done); } else done();
+  }
+  $("camBtn").addEventListener("click", function () {
+    if (!window.Html5Qrcode) { setStatus("Skannern kunde inte laddas. Använd Fota streckkoden eller skriv in numret.", "err"); return; }
+    $("reader").hidden = false; $("camBtn").hidden = true; $("camStop").hidden = false;
+    setStatus("Kameran startar. Håll streckkoden inom rutan.");
+    try {
+      cam = new Html5Qrcode("reader", { formatsToSupport: formats(), verbose: false });
+      cam.start({ facingMode: "environment" }, { fps: 12, qrbox: function (w, h) { return { width: Math.min(280, w * 0.85), height: Math.min(140, h * 0.5) }; } },
+        function (code) { stopCam(); lookup(code); }, function () {})
+        .catch(function () {
+          stopCam();
+          setStatus("Kameran kunde inte öppnas här. Tryck på Fota streckkoden i stället, det fungerar överallt.", "err");
+        });
+    } catch (err) {
+      stopCam(); setStatus("Kameran kunde inte öppnas här. Tryck på Fota streckkoden i stället.", "err");
+    }
+  });
+  $("camStop").addEventListener("click", stopCam);
+
+  $("fPhoto").addEventListener("change", function (e) {
+    var file = e.target.files && e.target.files[0]; if (!file) return;
+    setStatus("Läser streckkoden i bilden…");
+    var tryLib = function () {
+      if (!window.Html5Qrcode) { setStatus("Skannern kunde inte laddas. Skriv in numret under streckkoden.", "err"); return; }
+      var r = new Html5Qrcode("readerFile", { formatsToSupport: formats(), verbose: false });
+      r.scanFile(file, false).then(function (code) { try { r.clear(); } catch (x) {} lookup(code); })
+        .catch(function () { try { r.clear(); } catch (x) {} setStatus("Hittade ingen streckkod i bilden. Ta en skarp bild nära koden, eller skriv in numret.", "err"); });
+    };
+    if ("BarcodeDetector" in window && window.createImageBitmap) {
+      try {
+        var det = new window.BarcodeDetector({ formats: ["ean_13", "ean_8", "upc_a", "upc_e"] });
+        createImageBitmap(file).then(function (bmp) { return det.detect(bmp); })
+          .then(function (res) { if (res && res.length) lookup(res[0].rawValue); else tryLib(); })
+          .catch(tryLib);
+      } catch (err) { tryLib(); }
+    } else tryLib();
+    e.target.value = "";
+  });
+
+  $("eanLookup").addEventListener("click", function () { lookup($("fEan").value); });
+  $("fEan").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); lookup($("fEan").value); } });
+
+  $("storeForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var name = $("fName").value.trim(), price = parseFloat($("fPrice").value), qty = parseInt($("fQty").value, 10);
+    if (!name) { toast("Skriv vad varan heter."); $("fName").focus(); return; }
+    if (!(price > 0)) { toast("Ange ett ordinarie pris större än 0 kr."); $("fPrice").focus(); return; }
+    if (!(qty > 0)) { toast("Ange hur många som finns kvar."); $("fQty").focus(); return; }
+    var sid = $("fStore").value;
+    items.unshift({ id: sid + "|" + name + "|" + Date.now(), name: name, cat: $("fCat").value, store: sid, price: price, disc: +$("fDisc").value, days: +$("fDays").value, qty: qty, unit: "–", img: scanImg || undefined });
+    scanImg = "";
+    setTab("offers");
+    state.cat = "Alla"; state.store = sid; state.q = ""; $("q").value = "";
+    render();
+    toast("Publicerad. " + name + " syns nu hos " + byId[sid].name + ".");
+    $("varor").scrollIntoView({ behavior: "smooth" });
+  });
+
+  buildMap();
+  render();
+  fromHash();
+  measureHeader();
+  updateBar();
+})();
+</script>
+
+</body></html>
