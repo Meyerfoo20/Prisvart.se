@@ -158,7 +158,7 @@ button, input, select { font: inherit; color: inherit; }
 .map-head button { border: 0; background: none; color: var(--accent-main); font-weight: 600; font-size: 14px; cursor: pointer; padding: 4px; }
 .map-head button[hidden] { display: none !important; }
 .map-wrap { background: var(--water); }
-.map-svg { display: block; width: 100%; height: auto; max-width: 100%; max-height: 520px; margin: 0 auto; cursor: crosshair; touch-action: manipulation; }
+.map-svg { display: block; width: 100%; height: auto; max-width: 100%; max-height: 520px; margin: 0 auto; touch-action: manipulation; }
 .map-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .map-tools .btn { padding: 6px 12px; font-size: 13px; }
 .dist { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-data); font-size: 13px; font-weight: 600; color: var(--accent-main); background: var(--accent-light); padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
@@ -582,7 +582,6 @@ input[type="range"] { accent-color: var(--accent-main); padding: 0; border: 0; b
           <input id="locQ" type="search" autocomplete="off" placeholder="Skriv stadsdel, plats eller butik, t.ex. Söder">
         </div>
         <ul class="locsugg" id="locSugg" role="listbox" aria-label="Platser"></ul>
-        <p class="lochint">Eller tryck på kartan där du är.</p>
       </div>
     </div>
   </div>
@@ -1088,7 +1087,7 @@ input[type="range"] { accent-color: var(--accent-main); padding: 0; border: 0; b
       $("activeStoreText").innerHTML = "Visar varor från <b>" + esc(s.name) + "</b>, " + esc(s.addr);
       $("mapFoot").innerHTML = "<b>" + esc(s.name) + "</b> · " + n + " datumvaror · " + distText(storeKm(s.id)) + " från dig, ca " + walkText(storeKm(s.id));
     } else {
-      $("mapFoot").innerHTML = (state.gpsFail ? "Platsen kunde inte hämtas automatiskt. " : "") + "Din plats: <b>" + esc(state.meLabel) + "</b>. " + (state.gpsFail ? "Tryck på <b>Välj plats</b> eller på kartan där du är. " : "Tryck på kartan för att flytta den, eller på en butik för att se dess varor. ") +
+      $("mapFoot").innerHTML = (state.gpsFail ? "Platsen kunde inte hämtas automatiskt. " : "") + "Din plats: <b>" + esc(state.meLabel) + "</b>. " + (state.gpsFail ? "Tryck på <b>Välj plats</b> för att ange var du är. " : "Tryck på en butik för att se dess varor. ") +
         '<span class="map-attrib">' + stores.length + " butiker. Butiksplatser: Google.</span>";
     }
   }
@@ -1264,16 +1263,7 @@ input[type="range"] { accent-color: var(--accent-main); padding: 0; border: 0; b
   /* Map interaction */
   $("map").addEventListener("click", function (e) {
     var pin = e.target.closest(".pin");
-    if (pin) { selectStore(pin.getAttribute("data-store")); return; }
-    var svg = $("map"), pt = svg.createSVGPoint();
-    pt.x = e.clientX; pt.y = e.clientY;
-    var m = svg.getScreenCTM(); if (!m) return;
-    var loc = pt.matrixTransform(m.inverse());
-    var ll = unpx(loc.x, loc.y);
-    setMe(ll.lat, ll.lng, "vald på kartan", 0);
-    $("locPick").hidden = true;
-    render();
-    toast("Din plats är flyttad. Avstånden är uppdaterade.");
+    if (pin) selectStore(pin.getAttribute("data-store"));
   });
   $("map").addEventListener("keydown", function (e) {
     if (e.key !== "Enter" && e.key !== " ") return;
