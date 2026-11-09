@@ -84,9 +84,9 @@ button, input, select { font: inherit; color: inherit; }
 }
 .site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 700; font-size: 19px; letter-spacing: -0.02em; }
-.logo { display: block; height: 54px; width: auto; max-width: 100%; margin-block: -6px; }
-.footer .logo { height: 60px; margin-block: 0; }
-@media (max-width: 760px) { .logo { height: 44px; margin-block: -4px; } }
+.logo { display: block; height: 40px; width: auto; max-width: 100%; }
+.footer .logo { height: 46px; margin-block: 0; }
+@media (max-width: 760px) { .logo { height: 34px; } }
 .brand-mark {
   width: 30px; height: 30px; border-radius: 7px; background: var(--accent-main);
   display: grid; place-items: center; position: relative; flex: none;
