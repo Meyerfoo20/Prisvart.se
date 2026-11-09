@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Admin | Prisvärt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="icon" type="image/png" href="logo-liten.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Prisvärt Helsingborg, till startsidan"><img class="logo" src="logo-liten.png" alt="Prisvärt Helsingborg" width="307" height="128"></a>
+    <a class="page-link" href="index.html">Erbjudanden</a>
+  </div>
+</header>
+<main class="section page-main">
+  <div class="wrap">
+    <div class="gate" id="gate"><b>Laddar…</b></div>
+    <div id="panel" hidden>
+      <div class="page-head"><p class="eyebrow">Admin</p><h1>Butikskoder</h1><p>Varje kod kan användas en gång och kopplar kontot till butiken. Tar du bort en kod spärras butikskontot från att ändra varor.</p></div>
+      <div class="panel-grid">
+        <form class="form" id="codeForm">
+          <div class="form-title"><h3>Skapa kod</h3></div>
+          <div class="field"><label for="store">Butik</label><select id="store"></select></div>
+          <button class="btn" type="submit">Skapa butikskod</button>
+        </form>
+        <section aria-label="Koder">
+          <div class="panel-title"><h2>Alla koder</h2><span id="count"></span></div>
+          <ul class="rows" id="rows"></ul>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="butiker.js"></script>
+<script type="module">
+const $ = id => document.getElementById(id);
+let toastT;
+function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 3500); }
+function gate(title, link, label) { $("gate").innerHTML = "<b></b>" + (link ? '<p style="margin-top:14px"><a class="btn" href="' + link + '">' + label + "</a></p>" : ""); $("gate").firstChild.textContent = title; }
+let fb;
+try { fb = await import("./fb.js"); } catch (e) { gate("Kunde inte ansluta."); throw e; }
+if (!fb.configured) { gate("Sidan är inte kopplad till Firebase ännu."); throw new Error("firebase-config.js saknar värden"); }
+const list = window.PRISVART_BUTIKER, stores = Object.fromEntries(list.map(s => [s.id, s]));
+$("store").innerHTML = list.slice().sort((a, b) => a.name.localeCompare(b.name, "sv")).map(s => '<option value="' + s.id + '">' + s.name + "</option>").join("");
+let unsub = null;
+fb.onAuthStateChanged(fb.auth, async user => {
+  if (unsub) { unsub(); unsub = null; }
+  if (!user) return gate("Logga in som admin.", "konto.html", "Logga in");
+  let ok = false;
+  try { ok = (await fb.getDoc(fb.doc(fb.db, "admins", user.uid))).exists(); } catch (e) {}
+  if (!ok) return gate("Du har inte behörighet här.");
+  $("gate").hidden = true; $("panel").hidden = false;
+  unsub = fb.onSnapshot(fb.collection(fb.db, "storeCodes"), snap => {
+    $("count").textContent = snap.size + " st";
+    $("rows").innerHTML = snap.docs.map(d => { const v = d.data(); return '<li class="row"><div><b class="code">' + d.id + "</b><small>" + (stores[v.store] ? stores[v.store].name : v.store) + " · " + (v.usedBy ? "Använd" : "Ledig") + '</small></div><div class="row-actions"><button type="button" class="linkbtn" data-copy="' + d.id + '">Kopiera</button><button type="button" class="linkbtn" data-del="' + d.id + '">Ta bort</button></div></li>'; }).join("") || '<li class="empty"><b>Inga koder ännu</b>Skapa den första i formuläret.</li>';
+  }, () => toast("Kunde inte hämta koderna."));
+});
+function newCode() {
+  const A = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789", b = crypto.getRandomValues(new Uint8Array(12));
+  let s = ""; b.forEach((x, i) => { s += A[x % 32]; if (i === 3 || i === 7) s += "-"; }); return s;
+}
+$("codeForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const code = newCode();
+  try { await fb.setDoc(fb.doc(fb.db, "storeCodes", code), { store: $("store").value, usedBy: null, created: fb.serverTimestamp() }); toast("Kod skapad: " + code); }
+  catch (x) { toast("Koden kunde inte skapas."); }
+});
+let armed = null, armT;
+$("rows").addEventListener("click", async e => {
+  const c = e.target.closest("[data-copy]"), d = e.target.closest("[data-del]");
+  if (c) { try { await navigator.clipboard.writeText(c.dataset.copy); toast("Koden är kopierad."); } catch (x) { toast("Kunde inte kopiera. Markera koden i stället."); } }
+  if (d) {
+    if (armed !== d.dataset.del) { armed = d.dataset.del; d.textContent = "Tryck igen"; clearTimeout(armT); armT = setTimeout(() => { armed = null; d.textContent = "Ta bort"; }, 3000); return; }
+    armed = null;
+    try { await fb.deleteDoc(fb.doc(fb.db, "storeCodes", d.dataset.del)); toast("Koden är borttagen."); } catch (x) { toast("Koden kunde inte tas bort."); }
+  }
+});
+</script>
+</body>
+</html>

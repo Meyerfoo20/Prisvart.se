@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Butikspanel | Prisvärt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="icon" type="image/png" href="logo-liten.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Prisvärt Helsingborg, till startsidan"><img class="logo" src="logo-liten.png" alt="Prisvärt Helsingborg" width="307" height="128"></a>
+    <a class="page-link" href="index.html">Erbjudanden</a>
+  </div>
+</header>
+<main class="section page-main">
+  <div class="wrap">
+    <div class="gate" id="gate"><b>Laddar…</b></div>
+    <div id="panel" hidden>
+      <div class="page-head">
+        <p class="eyebrow">Butikspanel</p>
+        <h1 id="storeName"></h1>
+        <p id="storeAddr"></p>
+      </div>
+      <div class="panel-grid">
+        <form class="form" id="storeForm" novalidate>
+          <div class="form-title"><h3>Lägg upp en vara</h3></div>
+          <div class="scanbox">
+            <div class="field">
+              <label for="fEan">Streckkod (EAN)</label>
+              <div class="ean-row">
+                <input id="fEan" inputmode="numeric" autocomplete="off" placeholder="Skanna eller skriv in">
+                <button class="btn ghost sm" type="button" id="eanLookup">Sök</button>
+              </div>
+            </div>
+            <div class="scan-actions">
+              <button class="btn sm" type="button" id="camBtn">Skanna med kameran</button>
+              <label class="btn ghost sm" for="fPhoto">Fota streckkoden</label>
+              <input id="fPhoto" type="file" accept="image/*" capture="environment" class="visually-hidden">
+            </div>
+            <div id="reader" hidden></div>
+            <button class="btn ghost sm" type="button" id="camStop" hidden>Stäng kameran</button>
+            <div id="readerFile" hidden></div>
+            <p class="scan-status" id="scanStatus" aria-live="polite">Rikta kameran mot streckkoden. Varans namn fylls i automatiskt om den finns i databasen.</p>
+          </div>
+          <div class="field"><label for="fName">Vara</label><input id="fName" maxlength="120" required placeholder="Fylls i när du skannar"></div>
+          <div class="row2">
+            <div class="field"><label for="fPrice">Ordinarie pris (kr)</label><input id="fPrice" type="number" min="1" max="10000" step="0.01" inputmode="decimal" required></div>
+            <div class="field"><label for="fCat">Kategori</label><select id="fCat"></select></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="fDate">Bäst före</label><input id="fDate" type="date" required></div>
+            <div class="field"><label for="fQty">Antal</label><input id="fQty" type="number" min="1" max="999" value="1" inputmode="numeric" required></div>
+          </div>
+          <div class="field">
+            <label for="fDisc">Rabatt <span class="range-out" id="discOut">50 %</span></label>
+            <input id="fDisc" type="range" min="10" max="90" step="5" value="50">
+          </div>
+          <div class="calc"><span>Nytt pris <b id="newPrice">0,00 kr</b></span></div>
+          <button class="btn" type="submit" id="pubBtn">Publicera varan</button>
+        </form>
+        <section aria-label="Era varor">
+          <div class="panel-title"><h2>Era varor</h2><span id="count"></span></div>
+          <ul class="rows" id="rows"></ul>
+        </section>
+      </div>
+      <p style="margin-top:28px"><button class="linkbtn" type="button" id="logout">Logga ut</button></p>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="butiker.js"></script>
+<script type="module">
+const $ = id => document.getElementById(id);
+const esc = v => String(v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = n => n.toFixed(2).replace(".", ",");
+let toastT;
+function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 3500); }
+function gate(title, text, link, label) {
+  $("gate").innerHTML = "<b>" + esc(title) + "</b>" + (text ? "<p>" + esc(text) + "</p>" : "") + (link ? '<a class="btn" href="' + link + '">' + esc(label) + "</a>" : "");
+}
+const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const plusDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return key(d); };
+
+let fb;
+try { fb = await import("./fb.js"); }
+catch (e) { gate("Kunde inte ansluta", "Kontrollera internet och ladda om sidan."); throw e; }
+if (!fb.configured) { gate("Sidan är inte kopplad till Firebase ännu."); throw new Error("firebase-config.js saknar värden"); }
+
+const stores = Object.fromEntries(window.PRISVART_BUTIKER.map(s => [s.id, s]));
+let storeId = null, unsub = null, offers = {};
+
+fb.onAuthStateChanged(fb.auth, async user => {
+  if (unsub) { unsub(); unsub = null; }
+  $("panel").hidden = true; $("gate").hidden = false;
+  if (!user) return gate("Logga in för att fortsätta", "Butikspanelen är till för anslutna butiker.", "konto.html", "Logga in");
+  let p;
+  try { const s = await fb.getDoc(fb.doc(fb.db, "users", user.uid)); p = s.exists() ? s.data() : null; }
+  catch (e) { return gate("Kunde inte hämta kontot", "Ladda om sidan och försök igen."); }
+  if (!p || p.role !== "store" || !stores[p.store]) return gate("Det här är inget butikskonto", "Skapa ett butikskonto med er butikskod för att lägga upp varor.", "konto.html", "Till kontosidan");
+  storeId = p.store;
+  $("storeName").textContent = stores[storeId].name; $("storeAddr").textContent = stores[storeId].addr;
+  $("gate").hidden = true; $("panel").hidden = false;
+  unsub = fb.onSnapshot(fb.query(fb.collection(fb.db, "offers"), fb.where("store", "==", storeId)), snap => {
+    offers = {}; snap.docs.forEach(d => offers[d.id] = d.data()); renderRows();
+  }, () => toast("Kunde inte hämta era varor. Ladda om sidan."));
+});
+
+function renderRows() {
+  const today = key(new Date());
+  const ids = Object.keys(offers).sort((a, b) => offers[a].expiry.localeCompare(offers[b].expiry));
+  const active = ids.filter(id => offers[id].expiry >= today && offers[id].qty > 0).length;
+  $("count").textContent = active + (active === 1 ? " vara ute nu" : " varor ute nu");
+  $("rows").innerHTML = ids.map(id => {
+    const o = offers[id], late = o.expiry < today, now = Math.round(o.price * (100 - o.disc)) / 100;
+    const state = late ? "Datumet har passerat, syns inte för kunder" : o.qty === 0 ? "Slut, syns inte för kunder" : "Bäst före " + o.expiry;
+    return '<li class="row' + (late || !o.qty ? " off" : "") + '"><div><b>' + esc(o.name) + "</b><small>" + fmt(now) + " kr (−" + o.disc + " %) · ord. " + fmt(o.price) + ' kr</small><small class="' + (late || o.expiry === today ? "soon" : "") + '">' + state + "</small></div>" +
+      '<div class="row-actions"><span class="stepper"><button type="button" data-qty="-1" data-id="' + id + '" aria-label="Minska antal">−</button><output>' + o.qty + '</output><button type="button" data-qty="1" data-id="' + id + '" aria-label="Öka antal">+</button></span>' +
+      '<button type="button" class="linkbtn" data-del="' + id + '">Ta bort</button></div></li>';
+  }).join("") || '<li class="empty"><b>Inga varor ännu</b>Lägg upp er första vara i formuläret.</li>';
+}
+$("rows").addEventListener("click", async e => {
+  const q = e.target.closest("[data-qty]"), d = e.target.closest("[data-del]");
+  try {
+    if (q) {
+      const id = q.dataset.id, n = Math.max(0, Math.min(999, offers[id].qty + Number(q.dataset.qty)));
+      if (n !== offers[id].qty) await fb.updateDoc(fb.doc(fb.db, "offers", id), { qty: n });
+    } else if (d) {
+      const name = offers[d.dataset.del].name;
+      await fb.deleteDoc(fb.doc(fb.db, "offers", d.dataset.del)); toast(name + " är borttagen.");
+    }
+  } catch (x) { toast("Ändringen kunde inte sparas. Försök igen."); }
+});
+
+const cats = ["Mejeri", "Kött & fisk", "Bröd", "Frukt & grönt", "Färdigmat"];
+$("fCat").innerHTML = cats.map(c => "<option>" + esc(c) + "</option>").join("");
+function resetDate() { $("fDate").min = key(new Date()); $("fDate").value = plusDays(1); }
+resetDate();
+function updateCalc() {
+  const p = parseFloat($("fPrice").value) || 0, d = +$("fDisc").value;
+  $("discOut").textContent = d + " %";
+  $("newPrice").textContent = fmt(Math.round(p * (100 - d)) / 100) + " kr";
+}
+["fPrice", "fDisc"].forEach(id => $(id).addEventListener("input", updateCalc)); updateCalc();
+
+/* Streckkod */
+function setStatus(m, kind) { const el = $("scanStatus"); el.textContent = m; el.className = "scan-status" + (kind ? " " + kind : ""); }
+function validEan(code) {
+  if (!/^\d{8}$|^\d{12,14}$/.test(code)) return false;
+  const digits = code.split("").map(Number), check = digits.pop(); let sum = 0;
+  digits.reverse().forEach((d, i) => sum += d * (i % 2 === 0 ? 3 : 1));
+  return (10 - (sum % 10)) % 10 === check;
+}
+function guessCat(tags) {
+  const t = (tags || []).join(" ");
+  if (/meat|fish|seafood|poultry|chicken|sausage/.test(t)) return "Kött & fisk";
+  if (/dair|milk|cheese|yogurt|butter|cream/.test(t)) return "Mejeri";
+  if (/bread|bakery|pastr|bun/.test(t)) return "Bröd";
+  if (/fruit|vegetable|salad/.test(t)) return "Frukt & grönt";
+  return "Färdigmat";
+}
+let scanImg = "";
+async function lookup(raw) {
+  scanImg = "";
+  const code = String(raw).replace(/\D/g, ""); $("fEan").value = code;
+  if (!validEan(code)) return setStatus("Numret " + code + " är inte en giltig streckkod. Kontrollera siffrorna.", "err");
+  setStatus("Streckkod " + code + " läst. Söker varan…");
+  const miss = () => { setStatus("Varan hittades inte i databasen. Skriv namnet själv.", "err"); $("fName").value = ""; $("fName").focus(); };
+  try {
+    const r = await fetch("https://world.openfoodfacts.org/api/v2/product/" + code + ".json?fields=product_name,product_name_sv,quantity,categories_tags,image_front_small_url", { signal: AbortSignal.timeout(6000) });
+    const data = await r.json(), pr = data && data.status === 1 && data.product, nm = pr && (pr.product_name_sv || pr.product_name);
+    if (!nm) return miss();
+    const full = nm + (pr.quantity && !nm.includes(pr.quantity) ? " " + pr.quantity : "");
+    scanImg = /^https:\/\//.test(pr.image_front_small_url || "") ? pr.image_front_small_url : "";
+    $("fName").value = full.slice(0, 120); $("fCat").value = guessCat(pr.categories_tags);
+    setStatus(full + ". Kontrollera namnet och fyll i pris.", "ok"); $("fPrice").focus();
+  } catch (e) { miss(); }
+}
+let cam = null;
+const formats = () => { const F = window.Html5QrcodeSupportedFormats; return F ? [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E] : undefined; };
+function stopCam() {
+  const done = () => { $("reader").hidden = true; $("camStop").hidden = true; $("camBtn").hidden = false; cam = null; };
+  if (cam) cam.stop().then(() => { try { cam.clear(); } catch (e) {} done(); }).catch(done); else done();
+}
+$("camBtn").onclick = () => {
+  if (!window.Html5Qrcode) return setStatus("Skannern kunde inte laddas. Skriv in numret i stället.", "err");
+  $("reader").hidden = false; $("camBtn").hidden = true; $("camStop").hidden = false;
+  setStatus("Kameran startar. Håll streckkoden inom rutan.");
+  cam = new Html5Qrcode("reader", { formatsToSupport: formats(), verbose: false });
+  cam.start({ facingMode: "environment" }, { fps: 12, qrbox: (w, h) => ({ width: Math.min(280, w * .85), height: Math.min(140, h * .5) }) }, code => { stopCam(); lookup(code); }, () => {})
+    .catch(() => { stopCam(); setStatus("Kameran kunde inte öppnas. Tryck på Fota streckkoden i stället.", "err"); });
+};
+$("camStop").onclick = stopCam;
+$("fPhoto").addEventListener("change", e => {
+  const file = e.target.files && e.target.files[0]; if (!file) return;
+  setStatus("Läser streckkoden i bilden…");
+  if (!window.Html5Qrcode) return setStatus("Skannern kunde inte laddas. Skriv in numret i stället.", "err");
+  const r = new Html5Qrcode("readerFile", { formatsToSupport: formats(), verbose: false });
+  r.scanFile(file, false).then(code => { try { r.clear(); } catch (x) {} lookup(code); })
+    .catch(() => { try { r.clear(); } catch (x) {} setStatus("Hittade ingen streckkod i bilden. Ta en skarp bild nära koden.", "err"); });
+  e.target.value = "";
+});
+$("eanLookup").onclick = () => lookup($("fEan").value);
+$("fEan").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); lookup($("fEan").value); } });
+
+$("storeForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("fName").value.trim(), price = Math.round(parseFloat($("fPrice").value) * 100) / 100, qty = parseInt($("fQty").value, 10), expiry = $("fDate").value;
+  if (!name) { toast("Skriv vad varan heter."); return $("fName").focus(); }
+  if (!(price > 0 && price <= 10000)) { toast("Ange ett ordinarie pris mellan 1 och 10 000 kr."); return $("fPrice").focus(); }
+  if (!(qty >= 1 && qty <= 999)) { toast("Ange antal mellan 1 och 999."); return $("fQty").focus(); }
+  if (!expiry || expiry < key(new Date())) { toast("Bäst före-datumet kan inte ha passerat."); return $("fDate").focus(); }
+  $("pubBtn").disabled = true;
+  try {
+    await fb.addDoc(fb.collection(fb.db, "offers"), { name, cat: $("fCat").value, store: storeId, price, disc: +$("fDisc").value, expiry, qty, ean: $("fEan").value.replace(/\D/g, "").slice(0, 14), img: scanImg, created: fb.serverTimestamp() });
+    toast(name + " är publicerad.");
+    $("storeForm").reset(); resetDate(); scanImg = ""; updateCalc();
+    setStatus("Klart. Skanna nästa vara.", "ok");
+  } catch (x) { toast("Varan kunde inte publiceras. Kontrollera uppgifterna och försök igen."); }
+  $("pubBtn").disabled = false;
+});
+$("logout").onclick = () => fb.signOut(fb.auth);
+</script>
+</body>
+</html>

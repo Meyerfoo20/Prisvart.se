@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Konto | Prisvärt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="icon" type="image/png" href="logo-liten.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="page">
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="Prisvärt Helsingborg, till startsidan"><img class="logo" src="logo-liten.png" alt="Prisvärt Helsingborg" width="307" height="128"></a>
+    <a class="page-link" href="index.html">Erbjudanden</a>
+  </div>
+</header>
+<main class="section page-main">
+  <div class="wrap narrow">
+    <div id="authView" hidden>
+      <div class="switch" role="tablist" aria-label="Konto">
+        <button type="button" role="tab" id="tabLogin" aria-selected="true">Logga in</button>
+        <button type="button" role="tab" id="tabSignup" aria-selected="false">Skapa konto</button>
+      </div>
+
+      <form class="form" id="loginForm" novalidate>
+        <div class="form-title"><h3>Logga in</h3></div>
+        <div class="field"><label for="lEmail">E-post</label><input id="lEmail" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="lPass">Lösenord</label><input id="lPass" type="password" autocomplete="current-password" required></div>
+        <p class="form-error" id="lErr" role="alert" hidden></p>
+        <button class="btn wide" type="submit">Logga in</button>
+        <button class="linkbtn" type="button" id="forgot">Glömt lösenordet?</button>
+      </form>
+
+      <form class="form" id="signupForm" novalidate hidden>
+        <div class="form-title"><h3>Skapa konto</h3></div>
+        <fieldset class="role-pick">
+          <legend>Jag är</legend>
+          <label><input class="visually-hidden" type="radio" name="role" value="customer" checked><b>Användare</b><span>Spara din inköpslista</span></label>
+          <label><input class="visually-hidden" type="radio" name="role" value="store"><b>Butik</b><span>Lägg upp datumvaror</span></label>
+        </fieldset>
+        <div class="field" id="codeField" hidden>
+          <label for="sCode">Butikskod</label>
+          <input id="sCode" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX-XXXX">
+        </div>
+        <div class="field"><label for="sName" id="sNameLbl">Namn</label><input id="sName" autocomplete="name" maxlength="80" required></div>
+        <div class="field"><label for="sEmail">E-post</label><input id="sEmail" type="email" autocomplete="email" required></div>
+        <div class="field"><label for="sPass">Lösenord (minst 8 tecken)</label><input id="sPass" type="password" autocomplete="new-password" minlength="8" required></div>
+        <p class="form-error" id="sErr" role="alert" hidden></p>
+        <button class="btn wide" type="submit" id="sBtn">Skapa konto</button>
+        <p class="form-note">När du skapar konto behandlar vi dina uppgifter enligt vår <a href="integritet.html">integritetspolicy</a>.</p>
+      </form>
+    </div>
+
+    <div id="accountView" class="form" hidden>
+      <div class="form-title"><h3 id="aName"></h3></div>
+      <p id="aInfo"></p>
+      <a class="btn wide" id="aGo" href="index.html"></a>
+      <button class="btn ghost wide" type="button" id="logout">Logga ut</button>
+      <button class="linkbtn" type="button" id="delOpen">Radera mitt konto</button>
+      <form id="delForm" novalidate hidden style="display:grid;gap:12px">
+        <div class="field"><label for="dPass">Skriv ditt lösenord för att radera kontot</label><input id="dPass" type="password" autocomplete="current-password"></div>
+        <p class="form-error" id="dErr" role="alert" hidden></p>
+        <button class="btn wide" type="submit" id="dBtn">Radera kontot för gott</button>
+      </form>
+    </div>
+
+    <p class="gate" id="status">Laddar…</p>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="butiker.js"></script>
+<script type="module">
+const $ = id => document.getElementById(id);
+let toastT;
+function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 3500); }
+const MESSAGES = {
+  "auth/email-already-in-use": "Det finns redan ett konto med den e-postadressen. Logga in i stället.",
+  "auth/invalid-email": "E-postadressen ser inte rätt ut.",
+  "auth/weak-password": "Lösenordet är för svagt. Använd minst 8 tecken.",
+  "auth/invalid-credential": "Fel e-post eller lösenord.",
+  "auth/wrong-password": "Fel e-post eller lösenord.",
+  "auth/user-not-found": "Fel e-post eller lösenord.",
+  "auth/too-many-requests": "För många försök. Vänta en stund och prova igen.",
+  "auth/network-request-failed": "Ingen anslutning. Kontrollera internet och försök igen.",
+  "permission-denied": "Butikskoden kunde inte användas. Kontrollera koden.",
+  "bad-code": "Butikskoden är fel eller redan använd."
+};
+const msg = e => MESSAGES[e && e.code] || "Något gick fel. Försök igen.";
+function showErr(id, text) { $(id).textContent = text; $(id).hidden = !text; }
+
+function setTab(signup) {
+  $("tabLogin").setAttribute("aria-selected", !signup); $("tabSignup").setAttribute("aria-selected", signup);
+  $("loginForm").hidden = signup; $("signupForm").hidden = !signup;
+}
+function role() { return document.querySelector('input[name="role"]:checked').value; }
+function syncRole() {
+  const store = role() === "store";
+  $("codeField").hidden = !store;
+  $("sNameLbl").textContent = store ? "Ditt namn" : "Namn";
+  $("sBtn").textContent = store ? "Skapa butikskonto" : "Skapa konto";
+}
+$("tabLogin").onclick = () => setTab(false);
+$("tabSignup").onclick = () => setTab(true);
+document.querySelectorAll('input[name="role"]').forEach(r => r.onchange = syncRole);
+function fromHash() {
+  if (location.hash === "#butik") { document.querySelector('input[value="store"]').checked = true; syncRole(); setTab(true); }
+  else if (location.hash === "#skapa") setTab(true);
+}
+addEventListener("hashchange", fromHash); fromHash();
+
+let fb;
+try { fb = await import("./fb.js"); }
+catch (e) { $("status").textContent = "Kunde inte ansluta. Kontrollera internet och ladda om sidan."; throw e; }
+if (!fb.configured) { $("status").textContent = "Sidan är inte kopplad till Firebase ännu."; throw new Error("firebase-config.js saknar värden"); }
+
+const stores = Object.fromEntries(window.PRISVART_BUTIKER.map(s => [s.id, s]));
+const dest = p => p && p.role === "store" ? "butik.html" : "index.html";
+let busy = false;
+
+fb.onAuthStateChanged(fb.auth, async user => {
+  if (busy) return;
+  $("status").hidden = true;
+  if (!user) { $("authView").hidden = false; $("accountView").hidden = true; return; }
+  let p = null;
+  try { const s = await fb.getDoc(fb.doc(fb.db, "users", user.uid)); p = s.exists() ? s.data() : null; } catch (e) {}
+  $("authView").hidden = true; $("accountView").hidden = false;
+  $("aName").textContent = (p && p.name) || user.email;
+  const isStore = p && p.role === "store";
+  $("aInfo").textContent = isStore ? "Butikskonto för " + (stores[p.store] ? stores[p.store].name : p.store) + " · " + user.email : user.email;
+  $("aGo").textContent = isStore ? "Till butikspanelen" : "Till erbjudanden";
+  $("aGo").href = dest(p);
+});
+
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault(); showErr("lErr", ""); busy = true;
+  try {
+    const c = await fb.signInWithEmailAndPassword(fb.auth, $("lEmail").value.trim(), $("lPass").value);
+    let p = null;
+    try { const s = await fb.getDoc(fb.doc(fb.db, "users", c.user.uid)); p = s.exists() ? s.data() : null; } catch (x) {}
+    location.href = dest(p);
+  } catch (x) { busy = false; showErr("lErr", msg(x)); }
+});
+$("forgot").onclick = async () => {
+  const email = $("lEmail").value.trim();
+  if (!email) { showErr("lErr", "Skriv din e-post först, så skickar vi en länk."); return; }
+  showErr("lErr", "");
+  try { await fb.sendPasswordResetEmail(fb.auth, email); toast("Om kontot finns har vi skickat en länk till " + email + "."); }
+  catch (x) { showErr("lErr", msg(x)); }
+};
+$("signupForm").addEventListener("submit", async e => {
+  e.preventDefault(); showErr("sErr", "");
+  const r = role(), name = $("sName").value.trim(), email = $("sEmail").value.trim(), pass = $("sPass").value;
+  const code = $("sCode").value.toUpperCase().replace(/[^A-Z0-9-]/g, "");
+  if (!name) return showErr("sErr", "Skriv ditt namn.");
+  if (pass.length < 8) return showErr("sErr", "Lösenordet behöver minst 8 tecken.");
+  if (r === "store" && !code) return showErr("sErr", "Butiker behöver en butikskod för att skapa konto.");
+  busy = true; $("sBtn").disabled = true;
+  let cred;
+  try {
+    cred = await fb.createUserWithEmailAndPassword(fb.auth, email, pass);
+    const uid = cred.user.uid, ref = fb.doc(fb.db, "users", uid);
+    if (r === "store") {
+      const codeRef = fb.doc(fb.db, "storeCodes", code), snap = await fb.getDoc(codeRef);
+      if (!snap.exists() || snap.data().usedBy) throw { code: "bad-code" };
+      const batch = fb.writeBatch(fb.db);
+      batch.set(ref, { role: "store", name, store: snap.data().store, code, created: fb.serverTimestamp() });
+      batch.update(codeRef, { usedBy: uid });
+      await batch.commit();
+      location.href = "butik.html";
+    } else {
+      await fb.setDoc(ref, { role: "customer", name, list: [], created: fb.serverTimestamp() });
+      location.href = "index.html";
+    }
+  } catch (x) {
+    if (cred) { try { await cred.user.delete(); } catch (y) {} }
+    busy = false; $("sBtn").disabled = false; showErr("sErr", msg(x));
+  }
+});
+$("logout").onclick = () => fb.signOut(fb.auth);
+$("delOpen").onclick = () => { $("delForm").hidden = !$("delForm").hidden; if (!$("delForm").hidden) $("dPass").focus(); };
+$("delForm").addEventListener("submit", async e => {
+  e.preventDefault(); showErr("dErr", "");
+  const user = fb.auth.currentUser;
+  if (!user || !$("dPass").value) return showErr("dErr", "Skriv ditt lösenord.");
+  busy = true; $("dBtn").disabled = true;
+  try {
+    await fb.reauthenticateWithCredential(user, fb.EmailAuthProvider.credential(user.email, $("dPass").value));
+    await fb.deleteDoc(fb.doc(fb.db, "users", user.uid));
+    await user.delete();
+    try { localStorage.removeItem("datumfynd-lista"); } catch (x) {}
+    location.href = "index.html";
+  } catch (x) { busy = false; $("dBtn").disabled = false; showErr("dErr", msg(x)); }
+});
+</script>
+</body>
+</html>
