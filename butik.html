@@ -26,6 +26,31 @@
         <h1 id="storeName"></h1>
         <p id="storeAddr"></p>
       </div>
+
+      <section class="form import" id="importBox" aria-label="Importera varor från fil">
+        <label class="drop" id="drop" for="impFile">
+          <input id="impFile" type="file" accept=".xlsx,.csv,.txt,.tsv" class="visually-hidden">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15V4m0 0-4 4m4-4 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <b>Släpp en fil med era nedsatta varor här</b>
+          <span>Excel (.xlsx) eller CSV. Alla varor läses in automatiskt, sedan trycker ni Publicera.</span>
+          <span class="btn sm">Välj fil</span>
+        </label>
+        <p class="form-note" id="impNote">Filen behöver kolumner för vara eller streckkod och ordinarie pris. Rabatt eller nytt pris, bäst före och antal läses in om de finns. <button class="linkbtn" type="button" id="impTemplate">Ladda ner en mall</button></p>
+        <p class="form-error" id="impErr" role="alert" hidden></p>
+
+        <div id="impPreview" hidden>
+          <div class="imp-head">
+            <div><h3 id="impTitle"></h3><p id="impCols"></p></div>
+            <button class="linkbtn" type="button" id="impCancel">Avbryt</button>
+          </div>
+          <div class="row2" id="impDefaults">
+            <div class="field" id="impDiscF"><label for="impDisc">Rabatt där filen saknar rabatt</label><select id="impDisc"></select></div>
+            <div class="field" id="impDateF"><label for="impDate">Bäst före där filen saknar datum</label><input id="impDate" type="date"></div>
+          </div>
+          <ul class="rows imp-rows" id="impRows"></ul>
+          <button class="btn wide" type="button" id="impPublish">Publicera</button>
+        </div>
+      </section>
       <div class="panel-grid">
         <form class="form" id="storeForm" novalidate>
           <div class="form-title"><h3>Lägg upp en vara</h3></div>
@@ -76,6 +101,7 @@
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="butiker.js"></script>
 <script type="module">
+import * as IM from "./import.js";
 const $ = id => document.getElementById(id);
 const esc = v => String(v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const fmt = n => n.toFixed(2).replace(".", ",");
@@ -107,7 +133,7 @@ fb.onAuthStateChanged(fb.auth, async user => {
   $("storeName").textContent = stores[storeId].name; $("storeAddr").textContent = stores[storeId].addr;
   $("gate").hidden = true; $("panel").hidden = false;
   unsub = fb.onSnapshot(fb.query(fb.collection(fb.db, "offers"), fb.where("store", "==", storeId)), snap => {
-    offers = {}; snap.docs.forEach(d => offers[d.id] = d.data()); renderRows();
+    offers = {}; snap.docs.forEach(d => offers[d.id] = d.data()); renderRows(); if (imp && !publishing) renderImport();
   }, () => toast("Kunde inte hämta era varor. Ladda om sidan."));
 });
 
@@ -117,7 +143,7 @@ function renderRows() {
   const active = ids.filter(id => offers[id].expiry >= today && offers[id].qty > 0).length;
   $("count").textContent = active + (active === 1 ? " vara ute nu" : " varor ute nu");
   $("rows").innerHTML = ids.map(id => {
-    const o = offers[id], late = o.expiry < today, now = Math.round(o.price * (100 - o.disc)) / 100;
+    const o = offers[id], late = o.expiry < today, now = typeof o.now === "number" ? o.now : Math.round(o.price * (100 - o.disc)) / 100;
     const state = late ? "Datumet har passerat, syns inte för kunder" : o.qty === 0 ? "Slut, syns inte för kunder" : "Bäst före " + o.expiry;
     return '<li class="row' + (late || !o.qty ? " off" : "") + '"><div><b>' + esc(o.name) + "</b><small>" + fmt(now) + " kr (−" + o.disc + " %) · ord. " + fmt(o.price) + ' kr</small><small class="' + (late || o.expiry === today ? "soon" : "") + '">' + state + "</small></div>" +
       '<div class="row-actions"><span class="stepper"><button type="button" data-qty="-1" data-id="' + id + '" aria-label="Minska antal">−</button><output>' + o.qty + '</output><button type="button" data-qty="1" data-id="' + id + '" aria-label="Öka antal">+</button></span>' +
@@ -217,7 +243,8 @@ $("storeForm").addEventListener("submit", async e => {
   if (!expiry || expiry < key(new Date())) { toast("Bäst före-datumet kan inte ha passerat."); return $("fDate").focus(); }
   $("pubBtn").disabled = true;
   try {
-    await fb.addDoc(fb.collection(fb.db, "offers"), { name, cat: $("fCat").value, store: storeId, price, disc: +$("fDisc").value, expiry, qty, ean: $("fEan").value.replace(/\D/g, "").slice(0, 14), img: scanImg, created: fb.serverTimestamp() });
+    const disc = +$("fDisc").value;
+    await fb.addDoc(fb.collection(fb.db, "offers"), { name, cat: $("fCat").value, store: storeId, price, disc, now: Math.round(price * (100 - disc)) / 100, expiry, qty, ean: $("fEan").value.replace(/\D/g, "").slice(0, 14), img: scanImg, created: fb.serverTimestamp() });
     toast(name + " är publicerad.");
     $("storeForm").reset(); resetDate(); scanImg = ""; updateCalc();
     setStatus("Klart. Skanna nästa vara.", "ok");
@@ -225,6 +252,123 @@ $("storeForm").addEventListener("submit", async e => {
   $("pubBtn").disabled = false;
 });
 $("logout").onclick = () => fb.signOut(fb.auth);
+
+/* Import från fil */
+let imp = null, publishing = false;
+const offCache = {};
+$("impDisc").innerHTML = [10, 20, 25, 30, 40, 50, 60, 70].map(n => '<option value="' + n + '"' + (n === 30 ? " selected" : "") + ">" + n + " %</option>").join("");
+function impErr(t) { $("impErr").textContent = t || ""; $("impErr").hidden = !t; }
+function resetImport() { imp = null; $("impPreview").hidden = true; $("drop").hidden = false; $("impNote").hidden = false; $("impFile").value = ""; }
+
+async function handleFile(file) {
+  if (!file || publishing) return;
+  impErr("");
+  if (file.size > 10 * 1024 * 1024) return impErr("Filen är för stor. Max 10 MB.");
+  try {
+    const rows = await IM.readTable(file);
+    const header = IM.findHeader(rows);
+    if (!header) throw new Error("Hittade inga kolumner för vara och pris i filen. Första raden behöver rubriker som Vara, Pris och Bäst före. Ladda ner mallen och jämför.");
+    if (rows.length - header.index - 1 > IM.MAX_ROWS) throw new Error("Filen har fler än " + IM.MAX_ROWS + " rader. Dela upp den i flera filer.");
+    imp = { rows, header, file: file.name };
+    $("impDate").min = key(new Date()); $("impDate").value = plusDays(1);
+    $("drop").hidden = true; $("impNote").hidden = true; $("impPreview").hidden = false;
+    renderImport(); lookupNames();
+  } catch (e) { resetImport(); impErr(e.message || "Filen kunde inte läsas."); }
+}
+
+function sameOffer(o, it) {
+  if (o.expiry !== it.expiry || !(o.qty > 0)) return false;
+  return (it.ean && o.ean === it.ean) || (it.name && o.name.toLowerCase() === it.name.toLowerCase());
+}
+function currentItems() {
+  const list = IM.buildItems(imp.rows, imp.header, { defDisc: +$("impDisc").value, defExpiry: $("impDate").value, today: new Date() });
+  list.forEach(it => {
+    if (it.needName) {
+      const c = offCache[it.ean];
+      if (c && c !== "pending") { it.name = c.name; it.img = c.img; if (!it.catFromCell) it.cat = c.cat; it.needName = false; }
+      else if (c === null) { it.needName = false; if (!it.err) it.err = "Namn saknas och streckkoden hittades inte"; }
+      else it.wait = true;
+    }
+    if (!it.err && !it.wait && Object.values(offers).some(o => sameOffer(o, it))) it.dup = true;
+  });
+  return list;
+}
+function renderImport() {
+  if (!imp) return;
+  const list = currentItems(), ok = list.filter(it => !it.err && !it.dup && !it.wait);
+  const bad = list.filter(it => it.err).length, dup = list.filter(it => it.dup).length, wait = list.filter(it => it.wait).length;
+  $("impTitle").textContent = ok.length + (ok.length === 1 ? " vara redo" : " varor redo") + (bad ? " · " + bad + " med fel" : "") + (dup ? " · " + dup + " finns redan" : "");
+  $("impCols").textContent = imp.file + " · Hittade " + Object.keys(imp.header.cols).map(k => IM.COL_LABELS[k]).join(", ").toLowerCase();
+  $("impDiscF").hidden = !list.some(it => it.defDisc);
+  $("impDateF").hidden = !list.some(it => it.defDate);
+  $("impDefaults").hidden = $("impDiscF").hidden && $("impDateF").hidden;
+  const order = it => it.err ? 0 : it.wait ? 1 : it.dup ? 3 : 2;
+  const shown = list.slice().sort((a, b) => order(a) - order(b)).slice(0, 300);
+  $("impRows").innerHTML = shown.map(it => {
+    const status = it.err ? '<small class="soon">Rad ' + it.line + ": " + esc(it.err) + " · publiceras inte</small>"
+      : it.wait ? "<small>Söker varans namn via streckkoden…</small>"
+      : it.dup ? "<small>Finns redan hos er, hoppas över</small>"
+      : "<small>Bäst före " + esc(it.expiry) + " · " + it.qty + " st · " + esc(it.cat) + "</small>";
+    const price = it.price > 0 && it.now > 0 ? fmt(it.now) + " kr (−" + it.disc + " %) · ord. " + fmt(it.price) + " kr" : "";
+    return '<li class="row' + (it.err || it.dup ? " off" : "") + '"><div><b>' + esc(it.name || (it.ean ? "Streckkod " + it.ean : "Rad " + it.line)) + "</b>" + (price ? "<small>" + price + "</small>" : "") + status + "</div></li>";
+  }).join("") + (list.length > 300 ? '<li class="row"><div><small>Visar 300 av ' + list.length + " rader.</small></div></li>" : "") ||
+    '<li class="empty"><b>Filen innehåller inga varor</b>Kontrollera att varorna ligger under rubrikraden.</li>';
+  const btn = $("impPublish");
+  btn.disabled = publishing || wait > 0 || ok.length === 0;
+  btn.textContent = publishing ? btn.textContent : wait ? "Söker varunamn…" : ok.length ? "Publicera " + ok.length + (ok.length === 1 ? " vara" : " varor") : "Inget att publicera";
+}
+
+async function pool(items, n, fn) {
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length) { const it = items[i++]; await fn(it); } }));
+}
+async function lookupNames() {
+  const eans = [...new Set(currentItems().filter(it => it.wait).map(it => it.ean))].filter(e => !(e in offCache));
+  eans.forEach(e => offCache[e] = "pending");
+  await pool(eans, 4, async ean => {
+    try {
+      const r = await fetch("https://world.openfoodfacts.org/api/v2/product/" + ean + ".json?fields=product_name,product_name_sv,quantity,categories_tags,image_front_small_url", { signal: AbortSignal.timeout(8000) });
+      const d = await r.json(), p = d && d.status === 1 && d.product, nm = p && (p.product_name_sv || p.product_name);
+      offCache[ean] = nm ? { name: (nm + (p.quantity && !nm.includes(p.quantity) ? " " + p.quantity : "")).slice(0, 120), cat: guessCat(p.categories_tags) === "Färdigmat" ? IM.guessCat(nm) : guessCat(p.categories_tags), img: /^https:\/\//.test(p.image_front_small_url || "") ? p.image_front_small_url : "" } : null;
+    } catch (e) { offCache[ean] = null; }
+    renderImport();
+  });
+}
+
+$("impPublish").onclick = async () => {
+  if (!imp || publishing) return;
+  const ok = currentItems().filter(it => !it.err && !it.dup && !it.wait);
+  if (!ok.length) return;
+  publishing = true; let done = 0, failed = 0;
+  const btn = $("impPublish"); btn.disabled = true;
+  await pool(ok, 8, async it => {
+    try {
+      await fb.addDoc(fb.collection(fb.db, "offers"), { name: it.name, cat: it.cat, store: storeId, price: it.price, disc: it.disc, now: it.now, expiry: it.expiry, qty: it.qty, ean: it.ean, img: it.img || "", created: fb.serverTimestamp() });
+      done++;
+    } catch (e) { failed++; }
+    btn.textContent = "Publicerar " + (done + failed) + " av " + ok.length + "…";
+  });
+  publishing = false;
+  if (failed) { toast(done + " varor publicerades, " + failed + " gick inte. Kontrollera dem och försök igen."); renderImport(); }
+  else { toast(done + (done === 1 ? " vara är publicerad." : " varor är publicerade.")); resetImport(); }
+};
+$("impCancel").onclick = resetImport;
+$("impDisc").onchange = renderImport;
+$("impDate").onchange = renderImport;
+$("impFile").onchange = e => handleFile(e.target.files && e.target.files[0]);
+$("impTemplate").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([IM.templateCsv()], { type: "text/csv;charset=utf-8" }));
+  a.download = "prisvart-mall.csv"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+};
+["dragenter", "dragover"].forEach(ev => document.addEventListener(ev, e => { if (!$("panel").hidden && e.dataTransfer && [...e.dataTransfer.types].includes("Files")) { e.preventDefault(); $("drop").classList.add("over"); } }));
+["dragleave", "drop"].forEach(ev => document.addEventListener(ev, e => { if (ev === "dragleave" && e.relatedTarget) return; $("drop").classList.remove("over"); }));
+document.addEventListener("drop", e => {
+  if (!e.dataTransfer || !e.dataTransfer.files.length) return;
+  e.preventDefault();
+  if (!$("panel").hidden) handleFile(e.dataTransfer.files[0]);
+});
 </script>
 </body>
 </html>

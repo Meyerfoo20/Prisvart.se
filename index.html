@@ -271,7 +271,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var fmt = function (n) { return n.toFixed(2).replace(".", ","); };
   var byId = {}; stores.forEach(function (s) { byId[s.id] = s; });
-  var nowPrice = function (it) { return Math.round(it.price * (100 - it.disc)) / 100; };
+  var nowPrice = function (it) { return typeof it.now === "number" ? it.now : Math.round(it.price * (100 - it.disc)) / 100; };
   var esc = function (v) { return String(v).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
 
   /* Geometry */
@@ -801,7 +801,7 @@
     fb.onSnapshot(fb.query(fb.collection(fb.db, "offers"), fb.where("expiry", ">=", dayKey(new Date()))), function (snap) {
       items = snap.docs.map(function (d) {
         var v = d.data();
-        return { id: d.id, name: v.name, cat: v.cat, store: v.store, price: v.price, disc: v.disc, days: daysUntil(v.expiry), qty: v.qty, unit: "–", img: v.img || undefined, created: v.created };
+        return { id: d.id, name: v.name, cat: v.cat, store: v.store, price: v.price, disc: v.disc, now: v.now, days: daysUntil(v.expiry), qty: v.qty, unit: "–", img: v.img || undefined, created: v.created };
       }).filter(function (it) { return it.qty > 0 && byId[it.store]; });
       loaded = true; loadError = "";
       render();

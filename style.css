@@ -573,3 +573,17 @@ input[type="range"] { accent-color: var(--accent-main); padding: 0; border: 0; b
 .prose p, .prose li { color: var(--text-muted); font-size: 16px; line-height: 1.55; }
 .prose ul { padding-left: 20px; margin: 0; display: grid; gap: 6px; }
 .prose b { color: var(--text-main); }
+.import { margin-bottom: 32px; }
+.drop { display: grid; justify-items: center; gap: 8px; text-align: center; padding: 34px 20px; border: 2px dashed var(--border-color); border-radius: var(--r-md); background: var(--bg-main); cursor: pointer; color: var(--text-muted); transition: border-color .15s, background .15s; }
+.drop b { font-size: 18px; color: var(--text-main); }
+.drop span:not(.btn) { font-size: 14px; max-width: 34em; }
+.drop .btn { margin-top: 6px; }
+.drop:hover, .drop.over { border-color: var(--accent-main); background: var(--accent-light); }
+.drop:has(input:focus-visible) { outline: 2px solid var(--accent-main); outline-offset: 2px; }
+.imp-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+.imp-head h3 { font-size: 20px; }
+.imp-head p { font-size: 13px; color: var(--text-muted); margin-top: 4px; overflow-wrap: anywhere; }
+#impPreview { display: grid; gap: 16px; }
+#impPreview[hidden] { display: none; }
+.imp-rows { max-height: 460px; overflow: auto; padding-right: 2px; }
+.imp-rows .row { grid-template-columns: minmax(0, 1fr); padding: 10px 14px; }
