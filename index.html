@@ -502,8 +502,7 @@
     var c = countBy();
     stores.forEach(function (s) {
       var n = c[s.id] || 0, active = state.store === s.id;
-      var size = n ? 30 : 16, wrapSize = n ? 30 : 30;
-      var icon = L.divIcon({ className: "mk-wrap", html: '<div class="mk' + (n ? "" : " empty") + (active ? " active" : "") + '"><span>' + (n || "") + "</span></div>", iconSize: [wrapSize, wrapSize], iconAnchor: n ? [15, 30] : [15, 15], tooltipAnchor: [0, n ? -28 : -10] });
+      var icon = L.divIcon({ className: "mk-wrap", html: '<div class="mk' + (n ? "" : " zero") + (active ? " active" : "") + '"><span>' + n + "</span></div>", iconSize: [30, 30], iconAnchor: [15, 30], tooltipAnchor: [0, -28] });
       if (!markers[s.id]) {
         markers[s.id] = L.marker([s.lat, s.lng], { icon: icon, title: s.name, alt: s.name + ", " + n + " varor", keyboard: true, riseOnHover: true }).addTo(map);
         markers[s.id].bindTooltip(esc(s.name), { direction: "top" });

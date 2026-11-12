@@ -219,16 +219,17 @@ button, input, select { font: inherit; color: inherit; }
 .lochint { font-size: 13px; color: var(--muted); }
 
 /* Leaflet-markörer */
-.mk-wrap { background: none; border: 0; }
+.mk-wrap { background: none; border: 0; width: 30px !important; height: 30px !important; }
 .mk {
   width: 30px; height: 30px; border-radius: 50% 50% 50% 4px; transform: rotate(-45deg);
   background: var(--green); border: 2.5px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.3);
-  display: grid; place-items: center; transition: transform .15s;
+  display: flex; align-items: center; justify-content: center; transition: transform .15s;
 }
-.mk span { transform: rotate(45deg); color: #fff; font-weight: 700; font-size: 12px; font-family: var(--font); }
-.mk.empty { width: 16px; height: 16px; margin: 7px; background: #fff; border: 2.5px solid var(--green); box-shadow: 0 1px 3px rgba(0,0,0,.25); }
-.mk.active { background: var(--red); transform: rotate(-45deg) scale(1.25); }
-.mk.empty.active { background: var(--red); border-color: #fff; }
+.mk span { transform: rotate(45deg); color: #fff; font-weight: 700; font-size: 12px; line-height: 1; font-family: var(--font); }
+.mk.zero { background: #fff; border-color: var(--green); border-width: 2px; box-shadow: 0 1px 4px rgba(0,0,0,.25); }
+.mk.zero span { color: var(--muted); }
+.mk.active { background: var(--red); border-color: #fff; transform: rotate(-45deg) scale(1.25); }
+.mk.active span { color: #fff; }
 .leaflet-marker-icon:hover .mk, .leaflet-marker-icon:focus .mk { transform: rotate(-45deg) scale(1.15); }
 .leaflet-marker-icon:focus { outline: none; }
 .leaflet-marker-icon:focus-visible .mk { outline: 2px solid var(--text); outline-offset: 2px; }
