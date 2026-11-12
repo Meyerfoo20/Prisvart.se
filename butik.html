@@ -7,8 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" href="logo-liten.png">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body class="page">
 <header class="site-header">
@@ -99,9 +100,9 @@
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<script src="butiker.js"></script>
+<script src="js/butiker.js"></script>
 <script type="module">
-import * as IM from "./import.js";
+import * as IM from "./js/import.js";
 const $ = id => document.getElementById(id);
 const esc = v => String(v).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const fmt = n => n.toFixed(2).replace(".", ",");
@@ -114,7 +115,7 @@ const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0
 const plusDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return key(d); };
 
 let fb;
-try { fb = await import("./fb.js"); }
+try { fb = await import("./js/fb.js"); }
 catch (e) { gate("Kunde inte ansluta", "Kontrollera internet och ladda om sidan."); throw e; }
 if (!fb.configured) { gate("Sidan är inte kopplad till Firebase ännu."); throw new Error("firebase-config.js saknar värden"); }
 

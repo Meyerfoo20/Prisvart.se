@@ -3,80 +3,92 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Prisvärt Helsingborg</title>
+<title>Prisvärt Helsingborg – datumvaror till lägsta pris</title>
+<meta name="description" content="Hitta nedsatta datumvaror i butiker i Helsingborg och handla bra mat billigare.">
+<meta name="theme-color" content="#0b4a2f">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" href="logo-liten.png">
+<link rel="apple-touch-icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<meta name="description" content="Hitta nedsatta datumvaror i butiker i Helsingborg och handla bra mat billigare.">
-<link rel="icon" type="image/png" href="logo-liten.png">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="css/start.css">
 </head>
 <body>
 
 <header class="site-header">
-  <div class="wrap">
+  <div class="wrap hdr">
     <a class="brand" href="#top" aria-label="Prisvärt Helsingborg, till början"><img class="logo" src="logo-liten.png" alt="Prisvärt" width="704" height="160"></a>
+    <form class="search" id="searchForm" role="search">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="m14 14 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="search" placeholder="Sök vara eller butik, t.ex. kyckling" autocomplete="off" aria-label="Sök vara eller butik">
+    </form>
     <nav class="nav" aria-label="Huvudmeny">
-      <a href="#varor">Erbjudanden</a>
-      <a href="#sa-funkar-det">Så funkar det</a>
-      <a href="#butiker">För butiker</a>
-      <a href="konto.html" id="accountLink">Logga in</a>
-      <button type="button" class="btn sm listbtn" id="headerList">Inköpslista <span class="badge" id="headerCount">0</span></button>
+      <a class="navlink" href="#varor">Erbjudanden</a>
+      <a class="navlink" href="#karta">Butiker</a>
+      <a class="navlink" href="#butiker">För butiker</a>
+      <a class="acct" href="konto.html" id="accountLink"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span id="accountLbl">Logga in</span></a>
+      <button type="button" class="listbtn" id="headerList" aria-label="Inköpslista"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l2.4 11h11L21 7H6.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19.5" r="1.5" fill="currentColor"/><circle cx="17" cy="19.5" r="1.5" fill="currentColor"/></svg><span class="lbl">Inköpslista</span><span class="badge" id="headerCount">0</span></button>
     </nav>
   </div>
 </header>
 
-<section class="hero" id="top">
+<main>
+<section class="hero" id="top" aria-labelledby="dealsTitle">
   <div class="wrap">
-    <div>
-      <p class="eyebrow">Datumvaror nära dig</p>
-      <h1 style="margin-top:14px">Bra mat som snart går ut. <span class="tag" id="heroTag">Mycket</span> billigare.</h1>
-      <p class="hero-lead">Se vilka butiker i Helsingborg som har nedsatta datumvaror just nu. Lägg varorna i din inköpslista och få snabbaste rutten mellan butikerna i Google Maps.</p>
-      <form class="search" id="searchForm" role="search">
-        <label for="q">
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="2"/><path d="m14 14 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          <input id="q" type="search" placeholder="Sök vara, t.ex. kyckling eller bröd" autocomplete="off">
-        </label>
-        <button class="btn" type="submit">Visa varor</button>
-      </form>
-      <div class="hero-facts">
-        <span><b id="factItems">0</b> varor just nu</span>
-        <span>Varor i <b id="factStores">0</b> av butikerna</span>
-        <span>Närmaste butik <b id="factAvg">–</b></span>
+    <div class="hero-head">
+      <div>
+        <h1 id="dealsTitle"><span class="bolt" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></span>Störst rabatt just nu</h1>
+        <p class="hero-meta" id="dealsMeta"></p>
+      </div>
+      <div class="hero-nav">
+        <button type="button" class="arrow" id="dealsPrev" aria-label="Föregående erbjudanden"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 5-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <button type="button" class="arrow" id="dealsNext" aria-label="Fler erbjudanden"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <a class="btn ghost sm" href="#varor">Se alla</a>
       </div>
     </div>
+    <div class="deals" id="deals" aria-live="polite"></div>
+  </div>
+</section>
 
-    <div class="map-card" id="karta">
-      <div class="map-head">
-        <h2>Butiker på kartan</h2>
-        <div class="map-tools">
-          <button type="button" id="mapReset" hidden>Visa alla</button>
-          <button type="button" class="btn ghost" id="locBtn">Välj plats</button>
-          <button type="button" class="btn" id="gpsBtn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 0v2M8 14v2M0 8h2M14 8h2" stroke="currentColor" stroke-width="1.5"/></svg><span id="gpsLbl">Min plats</span></button>
-        </div>
+<section class="section" id="karta" aria-labelledby="mapTitle">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2 id="mapTitle">Butiker nära dig</h2>
+        <p id="storeCount">Tryck på en butik på kartan eller i listan för att se dess varor.</p>
       </div>
-      <div class="map-wrap">
-        <svg class="map-svg" id="map" viewBox="0 0 360 510" role="group" aria-label="Karta över Helsingborg med matbutiker och din plats"></svg>
+      <div class="map-tools">
+        <button type="button" class="btn ghost sm" id="mapReset" hidden>Visa alla butiker</button>
+        <button type="button" class="btn ghost sm" id="locBtn">Välj plats</button>
+        <button type="button" class="btn sm" id="gpsBtn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 0v2M8 14v2M0 8h2M14 8h2" stroke="currentColor" stroke-width="1.5"/></svg><span id="gpsLbl">Min plats</span></button>
       </div>
-      <p class="map-foot" id="mapFoot"></p>
-      <div class="locpick" id="locPick" hidden>
-        <div class="field">
-          <label for="locQ">Var är du?</label>
-          <input id="locQ" type="search" autocomplete="off" placeholder="Skriv stadsdel, plats eller butik, t.ex. Söder">
-        </div>
-        <ul class="locsugg" id="locSugg" role="listbox" aria-label="Platser"></ul>
+    </div>
+    <div class="locpick" id="locPick" hidden>
+      <label for="locQ">Var är du? Välj i listan eller tryck på kartan.</label>
+      <input id="locQ" type="search" autocomplete="off" placeholder="Skriv stadsdel, plats eller butik, t.ex. Söder">
+      <ul class="locsugg" id="locSugg" role="listbox" aria-label="Platser"></ul>
+    </div>
+    <div class="map-layout">
+      <div class="map-card">
+        <div class="map" id="map" role="region" aria-label="Karta över Helsingborg med matbutiker och din plats"></div>
+        <div class="map-foot" id="mapFoot"></div>
       </div>
+      <aside class="stores" aria-label="Butiker">
+        <div class="stores-head"><b>Butiker efter avstånd</b><label class="toggle"><input type="checkbox" id="onlyWith" checked> Bara med varor</label></div>
+        <ul class="store-list" id="storeList"></ul>
+      </aside>
     </div>
   </div>
 </section>
 
-<section class="section alt" id="varor">
+<section class="section white" id="varor" aria-labelledby="offersTitle">
   <div class="wrap">
     <div class="section-head">
       <div>
-        <p class="eyebrow">Hyllan just nu</p>
-        <h2 style="margin-top:10px">Datumvaror i Helsingborg</h2>
-        <p>Priserna gäller tills varan är slut eller bäst före-datumet passerat. Avståndet räknas från din plats på kartan.</p>
+        <h2 id="offersTitle">Alla erbjudanden</h2>
+        <p>Priserna gäller tills varan är slut eller bäst före-datumet har passerat.</p>
       </div>
     </div>
 
@@ -86,43 +98,42 @@
     </div>
 
     <div id="panelOffers" role="tabpanel" aria-labelledby="tabOffers">
-
-    <div class="toolbar">
-      <div class="chips" id="chips" role="group" aria-label="Filtrera på kategori"></div>
-      <label class="sort" for="sort">Sortera
-        <select id="sort">
-          <option value="discount">Störst rabatt</option>
-          <option value="expiry">Går ut först</option>
-          <option value="distance">Närmast</option>
-          <option value="price">Lägst pris</option>
-        </select>
-      </label>
-    </div>
-
-    <div class="active-store" id="activeStore" hidden>
-      <span id="activeStoreText"></span>
-      <button type="button" id="clearStore">Visa alla butiker</button>
-    </div>
-
-    <div class="grid" id="grid" aria-live="polite"></div>
+      <div class="toolbar">
+        <div class="chips" id="chips" role="group" aria-label="Filtrera på kategori"></div>
+        <div class="selects">
+          <label class="sel"><span>Butik</span><select id="storeSel" aria-label="Välj butik"></select></label>
+          <label class="sel"><span>Sortera</span><select id="sort" aria-label="Sortera">
+            <option value="discount">Störst rabatt</option>
+            <option value="expiry">Går ut först</option>
+            <option value="distance">Närmast</option>
+            <option value="price">Lägst pris</option>
+          </select></label>
+        </div>
+      </div>
+      <div class="active-store" id="activeStore" hidden>
+        <span id="activeStoreText"></span>
+        <button type="button" id="clearStore">Visa alla butiker</button>
+      </div>
+      <p class="result-meta" id="resultMeta"></p>
+      <div class="grid" id="grid" aria-live="polite"></div>
     </div>
 
     <div id="panelList" role="tabpanel" aria-labelledby="tabList" hidden>
       <div class="list-empty" id="listEmpty">
         <b>Din inköpslista är tom</b>
-        <p>Tryck på Lägg i listan på en vara. Varorna sorteras per butik, och du får en rutt mellan butikerna.</p>
+        <p>Tryck på Lägg i inköpslista på en vara. Varorna sorteras per butik och du får snabbaste rutten mellan butikerna.</p>
         <button type="button" class="btn" id="goOffers">Visa erbjudanden</button>
       </div>
       <div class="list-layout" id="listFull" hidden>
         <aside class="route" aria-label="Rutt">
           <div>
             <p class="eyebrow">Din rutt</p>
-            <h3 style="margin-top:6px" id="routeTitle"></h3>
+            <h3 style="margin-top:4px" id="routeTitle"></h3>
           </div>
           <div class="route-sum">
             <div><span>Varor</span><b id="sumCount">0</b></div>
             <div><span>Att betala</span><b id="sumPay">0 kr</b></div>
-            <div class="save"><span>Du sparar</span><b id="sumSave">0 kr</b></div>
+            <div class="save-box"><span>Du sparar</span><b id="sumSave">0 kr</b></div>
           </div>
           <div class="modes" role="radiogroup" aria-label="Färdsätt">
             <input type="radio" name="mode" id="mWalk" value="walking" checked><label for="mWalk">Gå</label>
@@ -131,7 +142,7 @@
           </div>
           <ol class="stops" id="stops"></ol>
           <a class="btn wide" id="routeLink" href="https://www.google.com/maps" target="_blank" rel="noopener">Öppna rutten i Google Maps</a>
-          <p class="route-note">Butikerna ligger i den ordning som ger kortast total sträcka från din plats. Google Maps visar exakt väg och tid. Avstånden här är fågelvägen.</p>
+          <p class="route-note">Butikerna ligger i den ordning som ger kortast sträcka från din plats. Avstånden här är fågelvägen.</p>
         </aside>
         <div class="groups">
           <div class="list-tools"><span id="listMeta"></span><button type="button" class="textbtn" id="clearList">Töm listan</button></div>
@@ -142,65 +153,52 @@
   </div>
 </section>
 
-<section class="section" id="sa-funkar-det">
+<section class="section" id="sa-funkar-det" aria-labelledby="howTitle">
   <div class="wrap">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Så funkar det</p>
-        <h2 style="margin-top:10px">Från hyllan till din kasse på tre steg</h2>
-      </div>
-    </div>
+    <div class="section-head"><div><h2 id="howTitle">Så funkar det</h2></div></div>
     <div class="steps">
       <div class="step">
-        <span class="num">Steg 1</span>
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6v12M7 6v12M10 6v12M14 6v12M17 6v12M20 6v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
         <h3>Butiken skannar varan</h3>
-        <p>Personalen skannar streckkoden, väljer rabatt och lägger upp varan. Det tar under tio sekunder.</p>
+        <p>Personalen skannar streckkoden, sätter rabatten och lägger upp varan på några sekunder.</p>
       </div>
       <div class="step">
-        <span class="num">Steg 2</span>
-        <h3>Du hittar varan</h3>
-        <p>Du ser varan direkt, med pris, bäst före-datum och hur långt du har till butiken.</p>
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+        <h3>Du hittar fynden</h3>
+        <p>Se pris, bäst före-datum och avstånd till butiken. Lägg varorna i din inköpslista.</p>
       </div>
       <div class="step">
-        <span class="num">Steg 3</span>
-        <h3>Gå dit och handla</h3>
-        <p>Varan står i butikens datumhylla och du betalar som vanligt i kassan. Butiken säljer mer och slänger mindre.</p>
+        <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l2.4 11h11L21 7H6.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19.5" r="1.5" fill="currentColor"/><circle cx="17" cy="19.5" r="1.5" fill="currentColor"/></svg></span>
+        <h3>Hämta och betala i kassan</h3>
+        <p>Varan står i butikens datumhylla. Du sparar pengar och butiken slänger mindre.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section alt" id="butiker">
-  <div class="wrap store-grid">
-    <div class="store-copy">
-      <p class="eyebrow">För butiker</p>
-      <h2 style="margin-top:10px">Sälj det ni annars hade slängt</h2>
-      <p>Prisvärt visar era nedsatta varor för kunder i närheten. Ni bestämmer rabatten och hur länge varan ligger ute.</p>
-      <ul class="benefits">
-        <li>
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div><b>Mindre svinn</b><span>Varor som går ut i datum når fler kunder innan de måste slängas.</span></div>
-        </li>
-        <li>
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div><b>Nya kunder i butiken</b><span>Den som hämtar en datumvara handlar ofta mer på samma besök.</span></div>
-        </li>
-        <li>
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div><b>Inget nytt system</b><span>Funkar i mobilen. Skanna, sätt pris, klart.</span></div>
-        </li>
-      </ul>
-    </div>
-
-    <div class="form store-cta">
-      <div class="form-title"><h3>Kom igång som butik</h3></div>
-      <p>Ni får en butikskod av oss. Med koden skapar ni ett butikskonto och kan börja lägga upp varor direkt från mobilen.</p>
-      <a class="btn wide" href="konto.html#butik">Skapa butikskonto</a>
-      <a class="btn ghost wide" href="konto.html">Logga in</a>
-      <p class="form-note">Ingen kod ännu? Mejla <a href="mailto:info@fenrac.se?subject=Butikskod%20till%20Prisv%C3%A4rt">info@fenrac.se</a> så hjälper vi er.</p>
+<section class="section" id="butiker" aria-labelledby="storesTitle">
+  <div class="wrap">
+    <div class="store-band">
+      <div>
+        <h2 id="storesTitle">Driver du en butik? Sälj det ni annars hade slängt.</h2>
+        <p>Prisvärt visar era nedsatta varor för kunder i närheten. Ni bestämmer rabatten och hur länge varan ligger ute.</p>
+        <ul class="benefits">
+          <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Mindre svinn</b><span>Datumvaror når fler kunder innan de måste slängas.</span></div></li>
+          <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Nya kunder i butiken</b><span>Den som hämtar en datumvara handlar ofta mer.</span></div></li>
+          <li><svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Inget nytt system</b><span>Funkar i mobilen. Skanna, sätt pris, klart.</span></div></li>
+        </ul>
+      </div>
+      <div class="store-cta">
+        <h3>Kom igång som butik</h3>
+        <p>Ni får en butikskod av oss. Med koden skapar ni ett butikskonto och lägger upp varor direkt från mobilen.</p>
+        <a class="btn wide" href="konto.html#butik">Skapa butikskonto</a>
+        <a class="btn ghost wide" href="konto.html">Logga in</a>
+        <p class="form-note">Ingen kod ännu? Mejla <a href="mailto:info@fenrac.se?subject=Butikskod%20till%20Prisv%C3%A4rt">info@fenrac.se</a> så hjälper vi er.</p>
+      </div>
     </div>
   </div>
 </section>
+</main>
 
 <footer class="footer">
   <div class="wrap">
@@ -212,6 +210,7 @@
       <h4>Handla</h4>
       <ul>
         <li><a href="#varor">Erbjudanden</a></li>
+        <li><a href="#karta">Butiker på kartan</a></li>
         <li><a href="#sa-funkar-det">Så funkar det</a></li>
       </ul>
     </div>
@@ -224,21 +223,22 @@
     </div>
     <div class="footer-bottom">
       <span>© 2026 Prisvärt · <a href="integritet.html">Integritetspolicy</a></span>
-      <span>Varor och priser läggs upp av butikerna. Butiksplatser: Google.</span>
+      <span>Varor och priser läggs upp av butikerna. Karta: Esri, OpenStreetMap.</span>
     </div>
   </div>
 </footer>
 
 <nav class="bottombar" aria-label="Snabbmeny">
-  <button type="button" data-go="karta" id="bbMap"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="1.8"/></svg></span><span class="lbl">Karta</span></button>
   <button type="button" data-go="offers" id="bbOffers"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8L3 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7.5" cy="8" r="1.6" fill="currentColor"/></svg></span><span class="lbl">Erbjudanden</span></button>
+  <button type="button" data-go="karta" id="bbMap"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 4v14M15 6v14" stroke="currentColor" stroke-width="1.8"/></svg></span><span class="lbl">Karta</span></button>
   <button type="button" data-go="list" id="bbList"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 4h2l2.4 11h11L21 7H6.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="19.5" r="1.5" fill="currentColor"/><circle cx="17" cy="19.5" r="1.5" fill="currentColor"/></svg><span class="bb-badge" id="bbCount" hidden>0</span></span><span class="lbl">Inköpslista</span></button>
   <button type="button" data-go="butiker" id="bbStores"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10v10h16V10M3 10l1.5-6h15L21 10H3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M10 20v-5h4v5" stroke="currentColor" stroke-width="1.8"/></svg></span><span class="lbl">För butiker</span></button>
 </nav>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="butiker.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/butiker.js"></script>
 <script>
 (function () {
   var stores = window.PRISVART_BUTIKER;
@@ -284,52 +284,6 @@
   function distText(d) { return d < 1 ? Math.round(d * 1000 / 10) * 10 + " m" : d.toFixed(1).replace(".", ",") + " km"; }
   function walkText(d) { var m = Math.round(d / 4.8 * 60); return m < 60 ? m + " min promenad" : Math.floor(m / 60) + " h " + (m % 60) + " min promenad"; }
   var storeKm = function (id) { return km(state.me, byId[id]); };
-
-  var LNG0 = 12.636, LAT0 = 56.102, K = 4768, COS = Math.cos(56.05 * Math.PI / 180);
-  function px(lat, lng) { return { x: (lng - LNG0) * COS * K, y: (LAT0 - lat) * K }; }
-  function unpx(x, y) { return { lat: LAT0 - y / K, lng: LNG0 + x / (COS * K) }; }
-
-  var coast = [[56.102,12.636],[56.090,12.642],[56.080,12.652],[56.070,12.662],[56.062,12.672],[56.054,12.681],[56.047,12.688],[56.041,12.691],[56.034,12.693],[56.026,12.697],[56.018,12.702],[56.010,12.707],[56.003,12.711],[55.994,12.715]];
-  var areas = [["Pålsjö",56.077,12.668],["Mariastaden",56.085,12.712],["Tågaborg",56.061,12.689],["Stattena",56.054,12.703],["Centrum",56.046,12.700],["Söder",56.035,12.712],["Berga",56.069,12.704],["Drottninghög",56.060,12.735],["Fredriksdal",56.050,12.715],["Gustavslund",56.028,12.748],["Råå",56.006,12.725],["Väla",56.098,12.745],["Ödåkra",56.100,12.770]];
-
-  function buildMap() {
-    var c = coast.map(function (p) { return px(p[0], p[1]); });
-    var coastD = c.map(function (p, i) { return (i ? "L" : "M") + p.x.toFixed(1) + " " + p.y.toFixed(1); }).join(" ");
-    var landD = coastD + " L360 510 L360 0 Z";
-    var e6 = [[56.102,12.772],[56.080,12.766],[56.050,12.762],[56.020,12.760],[55.994,12.758]].map(function (p) { var q = px(p[0], p[1]); return q.x.toFixed(1) + "," + q.y.toFixed(1); }).join(" ");
-    var ring = [[56.085,12.700],[56.070,12.735],[56.045,12.740],[56.025,12.730],[56.012,12.722]].map(function (p) { var q = px(p[0], p[1]); return q.x.toFixed(1) + "," + q.y.toFixed(1); }).join(" ");
-    var labels = areas.map(function (a) { var q = px(a[1], a[2]); return '<text class="area" x="' + q.x.toFixed(1) + '" y="' + q.y.toFixed(1) + '" text-anchor="middle">' + a[0] + "</text>"; }).join("");
-    $("map").innerHTML =
-      '<rect class="water" x="0" y="0" width="360" height="510"/>' +
-      '<path class="land" d="' + landD + '"/>' +
-      '<path class="coast" d="' + coastD + '"/>' +
-      '<polyline class="road" points="' + e6 + '"/>' +
-      '<polyline class="road minor" points="' + ring + '"/>' +
-      '<text class="sea" x="22" y="300" transform="rotate(-90 22 300)">ÖRESUND</text>' + labels +
-      '<g id="pins"></g><g id="me"></g>';
-  }
-
-  function renderPins() {
-    var counts = {}; items.forEach(function (it) { counts[it.store] = (counts[it.store] || 0) + 1; });
-    var order = stores.slice().sort(function (a, b) { return (a.id === state.store) - (b.id === state.store); });
-    $("pins").innerHTML = order.map(function (s) {
-      var p = px(s.lat, s.lng), n = counts[s.id] || 0;
-      return '<g class="pin' + (state.store === s.id ? " active" : "") + (n ? "" : " empty") + '" data-store="' + s.id + '" tabindex="0" role="button" aria-label="' + esc(s.name) + ", " + n + ' datumvaror">' +
-        '<circle class="ring" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="14"/>' +
-        '<circle class="dot" cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="' + (state.store === s.id ? 8 : 6) + '"/></g>';
-    }).join("");
-  }
-  function renderMe() {
-    var p = px(state.me.lat, state.me.lng);
-    var off = p.x < 8 || p.x > 352 || p.y < 8 || p.y > 502;
-    var x = Math.min(346, Math.max(14, p.x)), y = Math.min(496, Math.max(14, p.y));
-    var accR = state.acc ? Math.min(140, state.acc / 1000 * K) : 0;
-    var lx = x > 300 ? x - 24 : x + 11;
-    $("me").innerHTML = '<g class="you">' + (accR > 10 && !off ? '<circle class="acc" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + accR.toFixed(1) + '"/>' : "") +
-      '<circle class="halo" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="16"/><circle class="dot" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="6"/>' +
-      '<text x="' + lx.toFixed(1) + '" y="' + (y - 8).toFixed(1) + '">' + (off ? "Du ↗" : "Du") + "</text></g>";
-  }
-
   var months = ["jan", "feb", "mar", "apr", "maj", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
   function dayKey(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
   function daysUntil(key) {
@@ -367,7 +321,6 @@
       return '<button type="button" class="chip" data-cat="' + esc(c) + '" aria-pressed="' + (state.cat === c) + '">' + esc(c) + '<span class="n">' + n + "</span></button>";
     }).join("");
   }
-
   /* Product illustrations (inline SVG, viewBox 120x80) */
   var ART = {
     carton: function (c) { return '<path d="M47 24h26v44a2 2 0 0 1-2 2H49a2 2 0 0 1-2-2Z" fill="#ffffff" stroke="#d9d3c6"/><path d="M47 24l6-10h14l6 10Z" fill="#f4f1ea" stroke="#d9d3c6"/><rect x="56" y="9" width="8" height="5" rx="1.5" fill="' + c + '"/><rect x="47" y="40" width="26" height="16" fill="' + c + '"/><path d="M53 48c3-4 6-4 7 0s4 4 7 0" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>'; },
@@ -420,38 +373,158 @@
     return '<svg viewBox="0 0 120 80" role="img" aria-label="' + esc(it.name) + '"><ellipse cx="60" cy="70" rx="38" ry="4" fill="#000000" opacity=".06"/>' + body + "</svg>";
   }
   function picHtml(it, cls) {
-    var bg = TINT[it.cat] || "var(--bg-alt)";
+    var bg = TINT[it.cat] || "var(--bg)";
     var inner = it.img ? '<img src="' + esc(it.img) + '" alt="' + esc(it.name) + '" loading="lazy" data-fallback="1">' + '<span class="art-fb" hidden>' + artSvg(it) + "</span>" : artSvg(it);
     return '<div class="' + cls + '" style="background:' + bg + '">' + inner;
   }
-
   var pinIcon = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 11s4-3.6 4-6.5A4 4 0 0 0 2 4.5C2 7.4 6 11 6 11Z" stroke="currentColor" stroke-width="1.4"/><circle cx="6" cy="4.6" r="1.4" fill="currentColor"/></svg>';
+
+  /* Priser i butiksstil: 24⁹⁰ kr */
+  function priceHtml(n) {
+    var kr = Math.floor(n + 1e-9), ore = Math.round((n - kr) * 100);
+    return '<span aria-label="' + fmt(n) + ' kronor">' + kr + (ore ? "<sup>" + String(ore).padStart(2, "0") + "</sup>" : "<sup>:-</sup>") + "</span>";
+  }
+  function addLabel(inCart) { return inCart ? "✓ I inköpslistan" : "Lägg i inköpslista"; }
+  function countBy() { var c = {}; items.forEach(function (it) { c[it.store] = (c[it.store] || 0) + 1; }); return c; }
+
+  function cardHtml(it) {
+    var s = byId[it.store], d = storeKm(it.store), inCart = cart.indexOf(it.id) > -1, now = nowPrice(it);
+    return '<article class="card">' + picHtml(it, "pic") +
+      '<span class="splash" aria-label="' + it.disc + ' procent rabatt"><b>−' + it.disc + "</b><small>%</small></span>" +
+      (it.days <= 0 ? '<span class="flag">Sista dagen</span>' : it.qty <= 2 ? '<span class="flag">Bara ' + it.qty + " kvar</span>" : "") + "</div>" +
+      '<div class="card-body">' +
+        "<h3>" + esc(it.name) + "</h3>" +
+        '<p class="card-store"><b>' + esc(s.name) + "</b> · " + esc(s.addr) + "</p>" +
+        '<div class="card-tags"><span class="expiry' + (it.days <= 1 ? " soon" : "") + '">' + expiryText(it.days) + "</span>" +
+        '<button type="button" class="dist" data-show="' + s.id + '" title="Visa på kartan, ' + walkText(d) + '" aria-label="' + distText(d) + ' bort, visa på kartan">' + pinIcon + distText(d) + "</button></div>" +
+        '<div class="card-price"><span class="now">' + priceHtml(now) + '</span><span class="was">Ord. <s>' + fmt(it.price) + ' kr</s><br><span class="save">Spara ' + fmt(it.price - now) + " kr</span></span></div>" +
+        '<button type="button" class="addbtn' + (inCart ? " added" : "") + '" data-add="' + esc(it.id) + '" aria-pressed="' + inCart + '">' + addLabel(inCart) + "</button>" +
+      "</div></article>";
+  }
+  function skeletons(n) {
+    var one = '<div class="skel" aria-hidden="true"><i class="sp"></i><div class="sb"><i style="height:18px;width:80%"></i><i style="height:12px;width:55%"></i><i style="height:30px;width:45%;margin-top:8px"></i><i style="height:38px;border-radius:999px"></i></div></div>';
+    return new Array(n + 1).join(one);
+  }
+
+  /* Hero: störst rabatt */
+  function renderDeals() {
+    var el = $("deals");
+    if (!loaded && !loadError) { el.innerHTML = skeletons(6); updateArrows(); return; }
+    var top = items.slice().sort(function (a, b) { return b.disc - a.disc || a.days - b.days; }).slice(0, 12);
+    el.classList.toggle("is-empty", !top.length);
+    if (!top.length) {
+      el.innerHTML = '<div class="deals-empty"><b>' + (loadError ? "Erbjudandena kunde inte hämtas" : "Inga erbjudanden just nu") + "</b>" + esc(loadError || "Så snart en butik lägger upp en vara syns den här.") + "</div>";
+    } else el.innerHTML = top.map(cardHtml).join("");
+    updateArrows();
+  }
+  function updateArrows() {
+    var el = $("deals"), max = el.scrollWidth - el.clientWidth - 2;
+    $("dealsPrev").disabled = el.scrollLeft <= 2;
+    $("dealsNext").disabled = el.scrollLeft >= max;
+  }
+  function slide(dir) { var el = $("deals"); el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: reduceMotion ? "auto" : "smooth" }); }
 
   function renderGrid() {
     var list = filtered();
-    if (loadError || !loaded || !items.length) {
-      var head = loadError ? "Varorna kunde inte hämtas" : !loaded ? "Hämtar varor…" : "Inga datumvaror upplagda just nu";
-      var body = loadError || (!loaded ? "" : "Så snart en butik lägger upp en vara syns den här.");
-      $("grid").innerHTML = '<div class="empty" style="grid-column:1/-1"><b>' + esc(head) + "</b>" + esc(body) + "</div>";
+    $("resultMeta").textContent = loaded && items.length ? list.length + (list.length === 1 ? " vara" : " varor") + (state.cat !== "Alla" ? " i " + state.cat.toLowerCase() : "") + (state.q.trim() ? " som matchar ”" + state.q.trim() + "”" : "") : "";
+    if (!loaded && !loadError) { $("grid").innerHTML = skeletons(8); return; }
+    if (loadError || !items.length) {
+      $("grid").innerHTML = '<div class="empty"><b>' + esc(loadError ? "Varorna kunde inte hämtas" : "Inga datumvaror upplagda just nu") + "</b>" + esc(loadError || "Så snart en butik lägger upp en vara syns den här.") + "</div>";
       return;
     }
-    if (!list.length) {
-      $("grid").innerHTML = '<div class="empty" style="grid-column:1/-1"><b>Inga varor matchar</b>Prova en annan kategori, en annan butik eller ta bort sökordet.</div>';
-      return;
-    }
-    $("grid").innerHTML = list.map(function (it) {
-      var s = byId[it.store], d = storeKm(it.store), inCart = cart.indexOf(it.id) > -1;
-      return '<article class="item">' + picHtml(it, "pic") +
-        '<span class="sticker" aria-label="' + it.disc + ' procent rabatt">−' + it.disc + "%</span></div>" +
-        '<div class="item-top"><p class="store-line"><b>' + esc(s.name) + "</b>" + esc(s.addr) + "</p></div>" +
-        "<div><h3>" + esc(it.name) + '</h3><p class="meta">' + (it.unit !== "–" ? "Jmf-pris ord. " + esc(it.unit) + " · " : "") + esc(it.cat) + "</p></div>" +
-        '<div class="tags"><span class="expiry' + (it.days === 0 ? " soon" : "") + '">' + expiryText(it.days) + "</span>" +
-        '<button type="button" class="dist" data-show="' + s.id + '" title="Visa på kartan, ' + walkText(d) + '" aria-label="' + distText(d) + ' bort, visa på kartan">' + pinIcon + distText(d) + "</button></div>" +
-        '<div class="price-row"><div class="price"><span class="was"><s>' + fmt(it.price) + ' kr</s><span class="left">' + it.qty + " kvar</span></span>" +
-        '<span class="now">' + fmt(nowPrice(it)) + " <small>kr</small></span></div>" +
-        '<button type="button" class="btn sm addbtn' + (inCart ? " added" : "") + '" data-add="' + esc(it.id) + '" aria-pressed="' + inCart + '">' + (inCart ? "I listan ✓" : "Lägg i listan") + "</button></div>" +
-        "</article>";
+    if (!list.length) { $("grid").innerHTML = '<div class="empty"><b>Inga varor matchar</b>Prova en annan kategori, en annan butik eller ta bort sökordet.</div>'; return; }
+    $("grid").innerHTML = list.map(cardHtml).join("");
+  }
+  function syncAdd(id) {
+    var inCart = cart.indexOf(id) > -1;
+    document.querySelectorAll('[data-add="' + id.replace(/"/g, '\\"') + '"]').forEach(function (b) {
+      b.classList.toggle("added", inCart); b.setAttribute("aria-pressed", inCart); b.textContent = addLabel(inCart);
+    });
+  }
+
+  /* Butiksval och butikslista */
+  function storesByDist() { return stores.slice().sort(function (a, b) { return storeKm(a.id) - storeKm(b.id); }); }
+  function renderStoreSel() {
+    var c = countBy();
+    $("storeSel").innerHTML = '<option value="">Alla butiker</option>' + storesByDist().map(function (s) {
+      var n = c[s.id] || 0;
+      return '<option value="' + s.id + '">' + esc(s.name) + " · " + distText(storeKm(s.id)) + " (" + n + ")</option>";
     }).join("");
+    $("storeSel").value = state.store || "";
+  }
+  function renderStoreList() {
+    var c = countBy(), only = $("onlyWith").checked;
+    var arr = storesByDist().filter(function (s) { return !only || c[s.id] || s.id === state.store; });
+    $("storeList").innerHTML = arr.length ? arr.map(function (s) {
+      var n = c[s.id] || 0;
+      return '<li><button type="button" class="srow' + (state.store === s.id ? " active" : "") + (n ? "" : " none") + '" data-store="' + s.id + '" aria-pressed="' + (state.store === s.id) + '">' +
+        '<span class="srow-n" aria-label="' + n + ' varor">' + n + "</span>" +
+        '<span class="srow-t"><b>' + esc(s.name) + "</b><small>" + esc(s.addr) + "</small></span>" +
+        '<span class="srow-d">' + distText(storeKm(s.id)) + "</span></button></li>";
+    }).join("") : '<li class="store-empty">' + (loaded ? "Inga butiker har varor upplagda just nu." : "Hämtar butiker…") + "</li>";
+    if (loaded) $("storeCount").textContent = storesWithItems() + " av " + stores.length + " butiker i Helsingborg har datumvaror just nu.";
+  }
+
+  /* Riktig karta (Leaflet + OpenStreetMap) */
+  var map = null, markers = {}, meMarker = null, meCircle = null, lastMe = "", picking = false;
+  function buildMap() {
+    if (!window.L) { $("map").innerHTML = '<div class="map-fallback">Kartan kunde inte laddas. Butikerna finns i listan bredvid.</div>'; return; }
+    map = L.map("map", { scrollWheelZoom: false, zoomControl: true, attributionControl: true });
+    /* Esri-kartor kräver ingen API-nyckel. Faller tillbaka på OpenStreetMap om de inte svarar. */
+    var esri = "https://server.arcgisonline.com/ArcGIS/rest/services/";
+    var base = L.tileLayer(esri + "World_Street_Map/MapServer/tile/{z}/{y}/{x}", {
+      maxZoom: 19, attribution: 'Karta &copy; <a href="https://www.esri.com">Esri</a>, HERE, Garmin, &copy; OpenStreetMap'
+    }).addTo(map);
+    var tileErrors = 0;
+    base.on("tileerror", function () {
+      if (++tileErrors !== 6) return;
+      map.removeLayer(base);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map);
+    });
+    fitAll(false);
+    map.on("focus", function () { map.scrollWheelZoom.enable(); });
+    map.on("blur", function () { map.scrollWheelZoom.disable(); });
+    map.on("click", function (e) {
+      if (!picking) return;
+      var near = nearestPlace(e.latlng.lat, e.latlng.lng);
+      setMe(e.latlng.lat, e.latlng.lng, near ? "nära " + near : "vald plats på kartan", 0);
+      $("locPick").hidden = true; picking = false;
+      render(); toast("Din plats är satt. Avstånden är uppdaterade.");
+    });
+  }
+  function fitAll(animate) {
+    if (!map) return;
+    var pts = stores.map(function (s) { return [s.lat, s.lng]; });
+    map.fitBounds(L.latLngBounds(pts).pad(0.05), { animate: animate !== false });
+  }
+  function renderPins() {
+    if (!map) return;
+    var c = countBy();
+    stores.forEach(function (s) {
+      var n = c[s.id] || 0, active = state.store === s.id;
+      var size = n ? 30 : 16, wrapSize = n ? 30 : 30;
+      var icon = L.divIcon({ className: "mk-wrap", html: '<div class="mk' + (n ? "" : " empty") + (active ? " active" : "") + '"><span>' + (n || "") + "</span></div>", iconSize: [wrapSize, wrapSize], iconAnchor: n ? [15, 30] : [15, 15], tooltipAnchor: [0, n ? -28 : -10] });
+      if (!markers[s.id]) {
+        markers[s.id] = L.marker([s.lat, s.lng], { icon: icon, title: s.name, alt: s.name + ", " + n + " varor", keyboard: true, riseOnHover: true }).addTo(map);
+        markers[s.id].bindTooltip(esc(s.name), { direction: "top" });
+        markers[s.id].on("click", function () { selectStore(s.id); });
+      } else markers[s.id].setIcon(icon);
+      markers[s.id].setZIndexOffset(active ? 1000 : n ? 200 : 0);
+    });
+  }
+  function renderMe() {
+    if (!map) return;
+    var ll = [state.me.lat, state.me.lng], key = ll.join(",");
+    if (!meMarker) {
+      meMarker = L.marker(ll, { icon: L.divIcon({ className: "me-wrap", html: '<span class="me-dot"></span>', iconSize: [24, 24], iconAnchor: [12, 12] }), zIndexOffset: 2000, keyboard: false, interactive: false }).addTo(map);
+      meMarker.bindTooltip("Du", { permanent: true, direction: "right", offset: [10, 0], className: "me-tip" });
+    } else meMarker.setLatLng(ll);
+    if (state.acc > 30) {
+      if (!meCircle) meCircle = L.circle(ll, { radius: state.acc, color: "#1a73e8", weight: 1, fillOpacity: 0.08, interactive: false }).addTo(map);
+      else meCircle.setLatLng(ll).setRadius(state.acc);
+    } else if (meCircle) { map.removeLayer(meCircle); meCircle = null; }
+    if (lastMe && lastMe !== key && !state.store) map.flyTo(ll, Math.max(map.getZoom(), 14), { duration: reduceMotion ? 0 : 0.6 });
+    lastMe = key;
   }
 
   function renderFoot() {
@@ -461,22 +534,17 @@
     if (s) {
       var n = items.filter(function (it) { return it.store === s.id; }).length;
       $("activeStoreText").innerHTML = "Visar varor från <b>" + esc(s.name) + "</b>, " + esc(s.addr);
-      $("mapFoot").innerHTML = "<b>" + esc(s.name) + "</b> · " + n + " datumvaror · " + distText(storeKm(s.id)) + " från dig, ca " + walkText(storeKm(s.id));
+      $("mapFoot").innerHTML = "<span><b>" + esc(s.name) + "</b> · " + n + (n === 1 ? " vara" : " varor") + " · " + distText(storeKm(s.id)) + ", ca " + walkText(storeKm(s.id)) + "</span>" +
+        '<span style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn ghost sm" href="' + singleUrl(s) + '" target="_blank" rel="noopener">Vägbeskrivning</a>' + (n ? '<button type="button" class="btn sm" data-goitems="1">Visa ' + n + (n === 1 ? " vara" : " varor") + "</button>" : "") + "</span>";
     } else {
-      $("mapFoot").innerHTML = (state.gpsFail ? "Platsen kunde inte hämtas automatiskt. " : "") + "Din plats: <b>" + esc(state.meLabel) + "</b>. " + (state.gpsFail ? "Tryck på <b>Välj plats</b> för att ange var du är. " : "Tryck på en butik för att se dess varor. ") +
-        '<span class="map-attrib">' + "Butiker med varor just nu: " + storesWithItems() + ". Butiksplatser: Google.</span>";
+      $("mapFoot").innerHTML = "<span>" + (state.gpsFail ? "Platsen kunde inte hämtas automatiskt. " : "") + "Din plats: <b>" + esc(state.meLabel) + "</b>" +
+        (state.gpsFail ? " · Tryck på <b>Välj plats</b>." : " · Tryck på en butik för att se dess varor.") + "</span>";
     }
   }
-
   function storesWithItems() { var seen = {}; items.forEach(function (it) { seen[it.store] = 1; }); return Object.keys(seen).length; }
-
   function renderFacts() {
-    $("factItems").textContent = items.length;
-    $("factStores").textContent = storesWithItems();
     var top = items.reduce(function (m, it) { return Math.max(m, it.disc); }, 0);
-    $("heroTag").innerHTML = top ? "Upp till " + top + "&nbsp;%" : "Mycket";
-    var near = stores.reduce(function (best, s) { var d = storeKm(s.id); return d < best ? d : best; }, 99);
-    $("factAvg").textContent = distText(near);
+    $("dealsMeta").textContent = loaded && items.length ? items.length + " datumvaror i " + storesWithItems() + " butiker · upp till " + top + " % rabatt" : loadError ? "" : loaded ? "Helsingborg" : "Hämtar erbjudanden…";
   }
 
   /* Shopping list */
@@ -579,10 +647,11 @@
     $("tabList").setAttribute("aria-selected", t === "list");
     $("panelOffers").hidden = t !== "offers";
     $("panelList").hidden = t !== "list";
-    if (scroll) scrollToEl($("tabOffers").parentNode, 0);
+    if (scroll) scrollToEl($("varor"), -8);
     if (barCur === "offers" || barCur === "list") setBar(t);
   }
-  /* Bottom bar */
+
+  /* Bottenmeny */
   var reduceMotion = false;
   try { reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
   var barLock = 0, barCur = null;
@@ -595,16 +664,17 @@
   function updateBar() {
     if (Date.now() < barLock) return;
     var line = window.innerHeight * 0.35;
-    var v = $("varor").getBoundingClientRect(), h = $("sa-funkar-det").getBoundingClientRect(), b = $("butiker").getBoundingClientRect();
+    var k = $("karta").getBoundingClientRect(), v = $("varor").getBoundingClientRect(), h = $("sa-funkar-det").getBoundingClientRect(), b = $("butiker").getBoundingClientRect();
     var atEnd = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4;
     var cur;
     if (b.top <= line || atEnd) cur = "butiker";
     else if (h.top <= line) cur = "none";
     else if (v.top <= line) cur = tab === "list" ? "list" : "offers";
-    else cur = "karta";
+    else if (k.top <= line) cur = "karta";
+    else cur = "offers";
     setBar(cur);
   }
-  function headerH() { var hd = document.querySelector(".site-header"); return hd ? hd.offsetHeight : 56; }
+  function headerH() { var hd = document.querySelector(".site-header"); return hd ? hd.offsetHeight : 72; }
   function scrollToEl(el, extra) {
     var y = el.getBoundingClientRect().top + window.scrollY - headerH() - (extra || 0);
     window.scrollTo({ top: Math.max(0, y), behavior: reduceMotion ? "auto" : "smooth" });
@@ -616,21 +686,18 @@
     var b = e.target.closest("[data-go]"); if (!b) return;
     var go = b.getAttribute("data-go");
     setBar(go); barLock = Date.now() + 1000;
-    if (go === "offers" || go === "list") { setTab(go); scrollToEl($("tabOffers").parentNode, 0); }
-    else if (go === "karta") scrollToEl($("karta"), 12);
+    if (go === "offers" || go === "list") { setTab(go); scrollToEl($("varor"), -8); }
     else scrollToEl($(go), -8);
   });
-  /* Hide the bar while typing so it doesn't sit on top of the keyboard */
   var bar = document.querySelector(".bottombar");
-  var isField = function (el) { return el && el.matches && el.matches("input:not([type=range]):not([type=radio]):not([type=file]), select, textarea"); };
+  var isField = function (el) { return el && el.matches && el.matches("input:not([type=range]):not([type=radio]):not([type=checkbox]):not([type=file]), select, textarea"); };
   document.addEventListener("focusin", function (e) { if (isField(e.target)) bar.classList.add("away"); });
   document.addEventListener("focusout", function () { setTimeout(function () { if (!isField(document.activeElement)) bar.classList.remove("away"); }, 60); });
-
-  function measureHeader() { try { document.documentElement.style.setProperty("--hdr", document.querySelector(".site-header").offsetHeight + "px"); } catch (e) {} }
-  window.addEventListener("resize", measureHeader);
+  function measureHeader() { try { document.documentElement.style.setProperty("--hdr", headerH() + "px"); } catch (e) {} }
+  window.addEventListener("resize", function () { measureHeader(); updateArrows(); });
   function bump() { ["listCount", "headerCount"].forEach(function (id) { var el = $(id); el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }); }
 
-  function render() { renderChips(); renderGrid(); renderPins(); renderMe(); renderFoot(); renderFacts(); renderList(); }
+  function render() { renderChips(); renderDeals(); renderGrid(); renderStoreSel(); renderStoreList(); renderPins(); renderMe(); renderFoot(); renderFacts(); renderList(); }
 
   var toastTimer;
   function toast(msg) {
@@ -641,19 +708,10 @@
   function selectStore(id, force) {
     state.store = (state.store === id && !force) ? null : id;
     render();
+    if (!map) return;
+    if (state.store) { var s = byId[state.store]; map.flyTo([s.lat, s.lng], Math.max(map.getZoom(), 15), { duration: reduceMotion ? 0 : 0.6 }); }
   }
-
-  /* Map interaction */
-  $("map").addEventListener("click", function (e) {
-    var pin = e.target.closest(".pin");
-    if (pin) selectStore(pin.getAttribute("data-store"));
-  });
-  $("map").addEventListener("keydown", function (e) {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    var pin = e.target.closest(".pin"); if (!pin) return;
-    e.preventDefault(); var id = pin.getAttribute("data-store"); selectStore(id);
-    var again = document.querySelector('.pin[data-store="' + id + '"]'); if (again) again.focus();
-  });
+  function clearStore() { state.store = null; render(); fitAll(); }
 
   /* Location */
   function nearestPlace(lat, lng) {
@@ -662,7 +720,7 @@
     return bd < 1.2 ? best.name : null;
   }
   function openPicker(msg) {
-    $("locPick").hidden = false;
+    $("locPick").hidden = false; picking = true;
     renderSugg("");
     if (msg) toast(msg);
     setTimeout(function () { try { $("locQ").focus({ preventScroll: true }); } catch (e) {} }, 50);
@@ -677,17 +735,17 @@
     }).join("") || '<li class="lochint" style="padding:8px 10px">Hittade ingen plats som heter så. Prova en stadsdel, eller tryck på kartan.</li>';
     $("locSugg")._pool = pool;
   }
-  $("locBtn").addEventListener("click", function () { if ($("locPick").hidden) openPicker(); else $("locPick").hidden = true; });
+  $("locBtn").addEventListener("click", function () { if ($("locPick").hidden) openPicker(); else $("locPick").hidden = true; picking = false; });
   $("locQ").addEventListener("input", function (e) { renderSugg(e.target.value); });
   $("locQ").addEventListener("keydown", function (e) {
     if (e.key === "Enter") { e.preventDefault(); var first = $("locSugg").querySelector("[data-loc]"); if (first) first.click(); }
-    if (e.key === "Escape") $("locPick").hidden = true;
+    if (e.key === "Escape") $("locPick").hidden = true; picking = false;
   });
   $("locSugg").addEventListener("click", function (e) {
     var b = e.target.closest("[data-loc]"); if (!b) return;
     var pl = $("locSugg")._pool[+b.getAttribute("data-loc")];
     setMe(pl.lat, pl.lng, pl.name, 0);
-    $("locPick").hidden = true; $("locQ").value = "";
+    $("locPick").hidden = true; picking = false; $("locQ").value = "";
     render(); toast("Din plats: " + pl.name + ". Avstånden är uppdaterade.");
   });
 
@@ -714,7 +772,7 @@
         var lat = pos.coords.latitude, lng = pos.coords.longitude, acc = pos.coords.accuracy || 0;
         var near = nearestPlace(lat, lng);
         setMe(lat, lng, near ? "nära " + near : "din GPS-position", acc);
-        $("locPick").hidden = true;
+        $("locPick").hidden = true; picking = false;
         render();
         var dHbg = km({ lat: lat, lng: lng }, DEFAULT_ME);
         if (dHbg > 15) toast("Du verkar vara " + distText(dHbg) + " från Helsingborg. Avstånden räknas från din riktiga plats.");
@@ -732,19 +790,27 @@
   /* Look up the visitor's position as soon as the page opens */
   setTimeout(function () { useGps("auto"); }, 300);
 
+  /* Händelser */
+  $("dealsPrev").addEventListener("click", function () { slide(-1); });
+  $("dealsNext").addEventListener("click", function () { slide(1); });
+  $("deals").addEventListener("scroll", function () { updateArrows(); }, { passive: true });
   $("chips").addEventListener("click", function (e) {
     var b = e.target.closest(".chip"); if (!b) return;
-    state.cat = b.getAttribute("data-cat"); render();
+    state.cat = b.getAttribute("data-cat"); renderChips(); renderGrid();
   });
   $("sort").addEventListener("change", function (e) {
     state.sort = e.target.value;
     try { localStorage.setItem("datumfynd-sort", state.sort); } catch (err) {}
     renderGrid();
   });
+  $("storeSel").addEventListener("change", function (e) { if (e.target.value) selectStore(e.target.value, true); else clearStore(); });
+  $("onlyWith").addEventListener("change", renderStoreList);
+  $("storeList").addEventListener("click", function (e) { var b = e.target.closest("[data-store]"); if (b) selectStore(b.getAttribute("data-store")); });
+  $("mapFoot").addEventListener("click", function (e) { if (e.target.closest("[data-goitems]")) { setTab("offers"); scrollToEl($("varor"), -8); } });
   $("q").addEventListener("input", function (e) { state.q = e.target.value; renderGrid(); });
   $("searchForm").addEventListener("submit", function (e) {
-    e.preventDefault(); state.q = $("q").value; renderGrid();
-    $("varor").scrollIntoView({ behavior: "smooth" });
+    e.preventDefault(); state.q = $("q").value; setTab("offers"); renderGrid();
+    scrollToEl($("varor"), -8); $("q").blur();
   });
   $("tabOffers").addEventListener("click", function () { setTab("offers"); });
   $("tabList").addEventListener("click", function () { setTab("list"); });
@@ -754,7 +820,7 @@
     var b = e.target.closest("[data-remove]"); if (!b) return;
     var id = b.getAttribute("data-remove"), at = cart.indexOf(id);
     if (at > -1) cart.splice(at, 1);
-    saveCart(); renderGrid(); renderList();
+    saveCart(); syncAdd(id); renderList();
   });
   var clearArmed = false, clearTimer;
   $("clearList").addEventListener("click", function () {
@@ -764,39 +830,40 @@
       return;
     }
     clearTimeout(clearTimer); clearArmed = false; $("clearList").textContent = "Töm listan";
-    cart = []; saveCart(); renderGrid(); renderList(); toast("Inköpslistan är tömd.");
+    cart = []; saveCart(); renderDeals(); renderGrid(); renderList(); toast("Inköpslistan är tömd.");
   });
-  document.querySelectorAll('.modes input').forEach(function (r) {
+  document.querySelectorAll(".modes input").forEach(function (r) {
     r.addEventListener("change", function () { mode = r.value; try { localStorage.setItem("datumfynd-fardsatt", mode); } catch (e) {} renderList(); });
   });
-  function fromHash() { if (location.hash === "#inkopslista") setTab("list"); }
+  function fromHash() { if (location.hash === "#inkopslista") { setTab("list"); setTimeout(function () { scrollToEl($("varor"), -8); }, 50); } }
   window.addEventListener("hashchange", fromHash);
-
-  $("mapReset").addEventListener("click", function () { state.store = null; render(); });
-  $("clearStore").addEventListener("click", function () { state.store = null; render(); });
+  $("mapReset").addEventListener("click", clearStore);
+  $("clearStore").addEventListener("click", clearStore);
   document.addEventListener("error", function (e) {
     var img = e.target;
     if (!img || img.tagName !== "IMG" || !img.hasAttribute("data-fallback")) return;
     var fb = img.nextElementSibling; if (fb) fb.hidden = false;
     img.remove();
   }, true);
-  $("grid").addEventListener("click", function (e) {
+  document.querySelector("main").addEventListener("click", function (e) {
     var add = e.target.closest("[data-add]");
     if (add) {
       var id = add.getAttribute("data-add"), at = cart.indexOf(id), it = itemById(id);
       if (at > -1) { cart.splice(at, 1); toast(it.name + " är borttagen från listan."); }
       else { cart.push(id); toast(it.name + " ligger i listan. " + cart.length + (cart.length === 1 ? " vara" : " varor") + " totalt."); }
-      saveCart(); renderGrid(); renderList(); bump();
+      saveCart(); syncAdd(id); renderList(); bump();
       return;
     }
     var b = e.target.closest("[data-show]"); if (!b) return;
     selectStore(b.getAttribute("data-show"), true);
-    $("karta").scrollIntoView({ behavior: "smooth", block: "center" });
+    scrollToEl($("karta"), -8);
   });
 
   /* Firebase: varor i realtid, konto och inköpslista */
   function failLoad(msg) { loadError = msg; loaded = false; render(); }
-  import("./fb.js").then(function (fb) {
+  if (location.protocol === "file:") { failLoad("Sidan är öppnad som en fil på datorn, och då blockerar webbläsaren databasen. Öppna den via prisvart.fenrac.se eller en lokal server (t.ex. Live Server i VS Code)."); }
+  else
+  import("./js/fb.js").then(function (fb) {
     if (!fb.configured) { failLoad("Sidan är inte kopplad till databasen ännu."); return; }
     fb.onSnapshot(fb.query(fb.collection(fb.db, "offers"), fb.where("expiry", ">=", dayKey(new Date()))), function (snap) {
       items = snap.docs.map(function (d) {
@@ -810,11 +877,11 @@
     fb.onAuthStateChanged(fb.auth, function (user) {
       var link = $("accountLink");
       cloud = null;
-      if (!user) { link.textContent = "Logga in"; link.href = "konto.html"; return; }
+      if (!user) { $("accountLbl").textContent = "Logga in"; link.href = "konto.html"; return; }
       fb.getDoc(fb.doc(fb.db, "users", user.uid)).then(function (snap) {
         var p = snap.exists() ? snap.data() : null;
-        if (p && p.role === "store") { link.textContent = "Butikspanel"; link.href = "butik.html"; return; }
-        link.textContent = "Mitt konto"; link.href = "konto.html";
+        if (p && p.role === "store") { $("accountLbl").textContent = "Butikspanel"; link.href = "butik.html"; return; }
+        $("accountLbl").textContent = "Mitt konto"; link.href = "konto.html";
         if (!p) return;
         var ref = fb.doc(fb.db, "users", user.uid);
         cloud = { save: function (list) { fb.updateDoc(ref, { list: list.slice(0, 200) }).catch(function () {}); } };

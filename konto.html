@@ -7,8 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" href="logo-liten.png">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body class="page">
 <header class="site-header">
@@ -71,7 +72,7 @@
   </div>
 </main>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="butiker.js"></script>
+<script src="js/butiker.js"></script>
 <script type="module">
 const $ = id => document.getElementById(id);
 let toastT;
@@ -112,7 +113,7 @@ function fromHash() {
 addEventListener("hashchange", fromHash); fromHash();
 
 let fb;
-try { fb = await import("./fb.js"); }
+try { fb = await import("./js/fb.js"); }
 catch (e) { $("status").textContent = "Kunde inte ansluta. Kontrollera internet och ladda om sidan."; throw e; }
 if (!fb.configured) { $("status").textContent = "Sidan är inte kopplad till Firebase ännu."; throw new Error("firebase-config.js saknar värden"); }
 
