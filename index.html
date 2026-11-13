@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Prisvärt Helsingborg – datumvaror till lägsta pris</title>
 <meta name="description" content="Hitta nedsatta datumvaror i butiker i Helsingborg och handla bra mat billigare.">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#121517">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" href="logo-liten.png">
 <link rel="apple-touch-icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="css/start.css">
 </head>
@@ -39,7 +39,7 @@
   <div class="wrap">
     <div class="hero-head">
       <div>
-        <h1 id="dealsTitle"><span class="bolt" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></span>Störst rabatt just nu</h1>
+        <h1 id="dealsTitle">Störst rabatt just nu</h1>
         <p class="hero-meta" id="dealsMeta"></p>
       </div>
       <div class="hero-nav">
@@ -379,11 +379,11 @@
   }
   var pinIcon = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 11s4-3.6 4-6.5A4 4 0 0 0 2 4.5C2 7.4 6 11 6 11Z" stroke="currentColor" stroke-width="1.4"/><circle cx="6" cy="4.6" r="1.4" fill="currentColor"/></svg>';
 
-  /* Pris: 24,90 kr */
+  /* Pris: 43,75 kr */
   function priceHtml(n) {
-    return fmt(n) + '<span class="kr"> kr</span>';
+    return fmt(n) + " kr";
   }
-  function addLabel(inCart) { return inCart ? "✓ I inköpslistan" : "Lägg i inköpslista"; }
+  function addLabel(inCart) { return inCart ? "I inköpslistan" : "Lägg i inköpslistan"; }
   function countBy() { var c = {}; items.forEach(function (it) { c[it.store] = (c[it.store] || 0) + 1; }); return c; }
 
   /* Kedjans märke som liten rund avatar, som butiksloggan i Too Good To Go */
@@ -391,22 +391,28 @@
   function chainOf(s) { for (var i = 0; i < CHAINS.length; i++) if (s.name.indexOf(CHAINS[i][0]) > -1) return CHAINS[i]; return ["", s.name.charAt(0), "#0b4a2f"]; }
   function avatarHtml(s, cls) { var c = chainOf(s); return '<span class="avatar ' + (cls || "") + '" style="--c:' + c[2] + '" aria-hidden="true">' + c[1] + "</span>"; }
 
+  /* Varje kategori har sin färg, som posttyperna på Wimos tavla */
+  var CATKEY = { "Mejeri": "mejeri", "Kött & fisk": "kott", "Bröd": "brod", "Frukt & grönt": "frukt", "Färdigmat": "fardig" };
   function cardHtml(it) {
     var s = byId[it.store], d = storeKm(it.store), inCart = cart.indexOf(it.id) > -1, now = nowPrice(it);
-    var left = it.days <= 0 ? '<span class="pill warn">Sista dagen</span>' : it.qty <= 2 ? '<span class="pill warn">Bara ' + it.qty + " kvar</span>" : '<span class="pill">' + it.qty + " kvar</span>";
-    return '<article class="card">' + picHtml(it, "pic") +
-      '<div class="pic-top"><span class="pill disc" aria-label="' + it.disc + ' procent rabatt">−' + it.disc + " %</span>" + left + "</div>" +
-      '<div class="pic-store">' + avatarHtml(s) + "<span>" + esc(s.name) + "</span></div></div>" +
-      '<div class="card-body">' +
+    var soon = it.days <= 1;
+    return '<article class="card k-' + (CATKEY[it.cat] || "ovrigt") + '">' + picHtml(it, "pic") +
+      '<span class="kat">' + esc(it.cat || "Övrigt") + "</span>" +
+      '<span class="disc" aria-label="' + it.disc + ' procent rabatt">−' + it.disc + " %</span></div>" +
+      '<div class="inner">' +
+        '<div class="storeline">' + avatarHtml(s) + '<span class="sn">' + esc(s.name) + "</span>" +
+          '<button type="button" class="dist" data-show="' + s.id + '" title="Visa på kartan, ' + walkText(d) + '" aria-label="' + distText(d) + ' bort, visa på kartan">' + distText(d) + "</button></div>" +
         "<h3>" + esc(it.name) + "</h3>" +
-        '<p class="card-meta"><span class="expiry' + (it.days <= 1 ? " soon" : "") + '">' + expiryText(it.days) + "</span>" +
-        '<button type="button" class="dist" data-show="' + s.id + '" title="Visa på kartan, ' + walkText(d) + '" aria-label="' + distText(d) + ' bort, visa på kartan">' + pinIcon + distText(d) + "</button></p>" +
-        '<div class="card-price"><span class="save">Spara ' + fmt(it.price - now) + ' kr</span><span class="pr"><s>' + fmt(it.price) + ' kr</s><span class="now">' + priceHtml(now) + "</span></span></div>" +
-        '<button type="button" class="addbtn' + (inCart ? " added" : "") + '" data-add="' + esc(it.id) + '" aria-pressed="' + inCart + '">' + addLabel(inCart) + "</button>" +
+        '<div class="tags"><span class="tag' + (soon ? " varn" : "") + '">' + expiryText(it.days) + "</span>" +
+          '<span class="tag' + (it.qty <= 2 ? " varn" : "") + '">' + it.qty + " kvar</span></div>" +
+        '<div class="pricerow"><span class="now">' + priceHtml(now) + '</span><s>' + fmt(it.price) + ' kr</s><span class="save">−' + fmt(it.price - now) + " kr</span></div>" +
+        '<button type="button" class="addbtn' + (inCart ? " added" : "") + '" data-add="' + esc(it.id) + '" aria-pressed="' + inCart + '">' +
+          (inCart ? '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>') +
+          "<span>" + addLabel(inCart) + "</span></button>" +
       "</div></article>";
   }
   function skeletons(n) {
-    var one = '<div class="skel" aria-hidden="true"><i class="sp"></i><div class="sb"><i style="height:18px;width:80%"></i><i style="height:12px;width:55%"></i><i style="height:30px;width:45%;margin-top:8px"></i><i style="height:38px;border-radius:999px"></i></div></div>';
+    var one = '<div class="skel" aria-hidden="true"><i class="sp"></i><div class="sb"><i style="height:12px;width:55%"></i><i style="height:18px;width:80%"></i><i style="height:22px;width:40%;margin-top:6px"></i><i style="height:40px;border-radius:999px"></i></div></div>';
     return new Array(n + 1).join(one);
   }
 
@@ -442,7 +448,8 @@
   function syncAdd(id) {
     var inCart = cart.indexOf(id) > -1;
     document.querySelectorAll('[data-add="' + id.replace(/"/g, '\\"') + '"]').forEach(function (b) {
-      b.classList.toggle("added", inCart); b.setAttribute("aria-pressed", inCart); b.textContent = addLabel(inCart);
+      b.classList.toggle("added", inCart); b.setAttribute("aria-pressed", inCart);
+      b.innerHTML = (inCart ? '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10.5 8 14.5 16 5.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>') + "<span>" + addLabel(inCart) + "</span>";
     });
   }
 
