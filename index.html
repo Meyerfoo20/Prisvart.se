@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Prisvärt Helsingborg – datumvaror till lägsta pris</title>
 <meta name="description" content="Hitta nedsatta datumvaror i butiker i Helsingborg och handla bra mat billigare.">
-<meta name="theme-color" content="#0b4a2f">
+<meta name="theme-color" content="#ffffff">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" href="logo-liten.png">
 <link rel="apple-touch-icon" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="css/start.css">
 </head>
@@ -379,25 +379,29 @@
   }
   var pinIcon = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 11s4-3.6 4-6.5A4 4 0 0 0 2 4.5C2 7.4 6 11 6 11Z" stroke="currentColor" stroke-width="1.4"/><circle cx="6" cy="4.6" r="1.4" fill="currentColor"/></svg>';
 
-  /* Priser i butiksstil: 24⁹⁰ kr */
+  /* Pris: 24,90 kr */
   function priceHtml(n) {
-    var kr = Math.floor(n + 1e-9), ore = Math.round((n - kr) * 100);
-    return '<span aria-label="' + fmt(n) + ' kronor">' + kr + (ore ? "<sup>" + String(ore).padStart(2, "0") + "</sup>" : "<sup>:-</sup>") + "</span>";
+    return fmt(n) + '<span class="kr"> kr</span>';
   }
   function addLabel(inCart) { return inCart ? "✓ I inköpslistan" : "Lägg i inköpslista"; }
   function countBy() { var c = {}; items.forEach(function (it) { c[it.store] = (c[it.store] || 0) + 1; }); return c; }
 
+  /* Kedjans märke som liten rund avatar, som butiksloggan i Too Good To Go */
+  var CHAINS = [["Willys", "W", "#d8172a"], ["Lidl", "Lidl", "#0050aa"], ["Hemköp", "H", "#d4002a"], ["City Gross", "CG", "#1d1d1b"], ["Coop", "Coop", "#00a651"], ["ICA", "ICA", "#e3000b"]];
+  function chainOf(s) { for (var i = 0; i < CHAINS.length; i++) if (s.name.indexOf(CHAINS[i][0]) > -1) return CHAINS[i]; return ["", s.name.charAt(0), "#0b4a2f"]; }
+  function avatarHtml(s, cls) { var c = chainOf(s); return '<span class="avatar ' + (cls || "") + '" style="--c:' + c[2] + '" aria-hidden="true">' + c[1] + "</span>"; }
+
   function cardHtml(it) {
     var s = byId[it.store], d = storeKm(it.store), inCart = cart.indexOf(it.id) > -1, now = nowPrice(it);
+    var left = it.days <= 0 ? '<span class="pill warn">Sista dagen</span>' : it.qty <= 2 ? '<span class="pill warn">Bara ' + it.qty + " kvar</span>" : '<span class="pill">' + it.qty + " kvar</span>";
     return '<article class="card">' + picHtml(it, "pic") +
-      '<span class="splash" aria-label="' + it.disc + ' procent rabatt"><b>−' + it.disc + "</b><small>%</small></span>" +
-      (it.days <= 0 ? '<span class="flag">Sista dagen</span>' : it.qty <= 2 ? '<span class="flag">Bara ' + it.qty + " kvar</span>" : "") + "</div>" +
+      '<div class="pic-top"><span class="pill disc" aria-label="' + it.disc + ' procent rabatt">−' + it.disc + " %</span>" + left + "</div>" +
+      '<div class="pic-store">' + avatarHtml(s) + "<span>" + esc(s.name) + "</span></div></div>" +
       '<div class="card-body">' +
         "<h3>" + esc(it.name) + "</h3>" +
-        '<p class="card-store"><b>' + esc(s.name) + "</b> · " + esc(s.addr) + "</p>" +
-        '<div class="card-tags"><span class="expiry' + (it.days <= 1 ? " soon" : "") + '">' + expiryText(it.days) + "</span>" +
-        '<button type="button" class="dist" data-show="' + s.id + '" title="Visa på kartan, ' + walkText(d) + '" aria-label="' + distText(d) + ' bort, visa på kartan">' + pinIcon + distText(d) + "</button></div>" +
-        '<div class="card-price"><span class="now">' + priceHtml(now) + '</span><span class="was">Ord. <s>' + fmt(it.price) + ' kr</s><br><span class="save">Spara ' + fmt(it.price - now) + " kr</span></span></div>" +
+        '<p class="card-meta"><span class="expiry' + (it.days <= 1 ? " soon" : "") + '">' + expiryText(it.days) + "</span>" +
+        '<button type="button" class="dist" data-show="' + s.id + '" title="Visa på kartan, ' + walkText(d) + '" aria-label="' + distText(d) + ' bort, visa på kartan">' + pinIcon + distText(d) + "</button></p>" +
+        '<div class="card-price"><span class="save">Spara ' + fmt(it.price - now) + ' kr</span><span class="pr"><s>' + fmt(it.price) + ' kr</s><span class="now">' + priceHtml(now) + "</span></span></div>" +
         '<button type="button" class="addbtn' + (inCart ? " added" : "") + '" data-add="' + esc(it.id) + '" aria-pressed="' + inCart + '">' + addLabel(inCart) + "</button>" +
       "</div></article>";
   }
@@ -458,9 +462,9 @@
     $("storeList").innerHTML = arr.length ? arr.map(function (s) {
       var n = c[s.id] || 0;
       return '<li><button type="button" class="srow' + (state.store === s.id ? " active" : "") + (n ? "" : " none") + '" data-store="' + s.id + '" aria-pressed="' + (state.store === s.id) + '">' +
-        '<span class="srow-n" aria-label="' + n + ' varor">' + n + "</span>" +
-        '<span class="srow-t"><b>' + esc(s.name) + "</b><small>" + esc(s.addr) + "</small></span>" +
-        '<span class="srow-d">' + distText(storeKm(s.id)) + "</span></button></li>";
+        avatarHtml(s, "lg") +
+        '<span class="srow-t"><b>' + esc(s.name) + "</b><small>" + esc(s.addr) + " · " + distText(storeKm(s.id)) + "</small></span>" +
+        '<span class="srow-n" aria-label="' + n + ' varor">' + (n ? n + " st" : "0") + "</span></button></li>";
     }).join("") : '<li class="store-empty">' + (loaded ? "Inga butiker har varor upplagda just nu." : "Hämtar butiker…") + "</li>";
     if (loaded) $("storeCount").textContent = storesWithItems() + " av " + stores.length + " butiker i Helsingborg har datumvaror just nu.";
   }
